@@ -35,15 +35,16 @@
 :- import_module io.
 :- import_module list.
 :- import_module require.
+:- import_module std_util.
 
 %----------------------------------------------------------------------------%
 %
 % Pretty printing
 %
 
-:- func suit_symbol(suit) = string.
+:- func (suit ^ suit_symbol) = string.
 
-suit_symbol(Suit) = Symbol :- suit_symbol(Suit, Symbol).
+Suit ^ suit_symbol = Symbol :- suit_symbol(Suit, Symbol).
 
 :- pred suit_symbol(suit, string).
 :- mode suit_symbol(in, out) is det.
@@ -54,9 +55,9 @@ suit_symbol(hearts,   "♥").
 suit_symbol(spades,   "♠").
 suit_symbol(clubs,    "♣").
 
-:- func suit_colour(suit) = ansi_colour.
+:- func (suit ^ suit_colour) = ansi_colour.
 
-suit_colour(Suit) = Colour :- suit_colour(Suit, Colour).
+Suit ^ suit_colour = Colour :- suit_colour(Suit, Colour).
 
 :- pred suit_colour(suit, ansi_colour).
 :- mode suit_colour(in, out) is det.
@@ -67,8 +68,12 @@ suit_colour(hearts,   red).
 suit_colour(spades,   green).
 suit_colour(clubs,    black).
 
-suit_to_doc(Suit) =
-    white_bg(fg(ansi(suit_colour(Suit)), str(suit_symbol(Suit)))).
+suit_to_doc(Suit) = Doc :-
+    SuitFgAndBg = compose(
+        fg(ansi(Suit^suit_colour, normal)),
+        ( if Suit^suit_colour = black then grey_bg else black_bg )
+    ),
+    Doc = SuitFgAndBg(str(Suit^suit_symbol)).
 
 
 :- initialise init/2.
@@ -78,7 +83,7 @@ suit_to_doc(Suit) =
 init(!IO) :-
     update_formatters(
         [
-            fmt("skat.suit", "suit", 0, fmt_any(suit_to_doc))
+            fmt($module, "suit", 0, fmt_any(suit_to_doc))
         ], !IO).
 
 %----------------------------------------------------------------------------%

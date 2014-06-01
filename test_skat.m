@@ -32,9 +32,9 @@
 
 main(!IO) :-
     print_test("diamonds", diamonds, !IO),
-    print_test("hearts",   hearts,   !IO),
-    print_test("spades",   spades,   !IO),
-    print_test("clubs",    clubs,    !IO).
+    print_test("hearts  ", hearts,   !IO),
+    print_test("spades  ", spades,   !IO),
+    print_test("clubs   ", clubs,    !IO).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
