@@ -1,6 +1,6 @@
 MMC=mmc
 MCFLAGS=--use-grade-subdirs -O3
-MLLIBS=
+MLLIBS=--ml mercury_misc
 
 SKAT_SUBS := $(wildcard *.m)
 

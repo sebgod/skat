@@ -31,7 +31,19 @@
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
-    io.write_line("TODO: tests", !IO).
+    print_test("diamonds", diamonds, !IO),
+    print_test("hearts",   hearts,   !IO),
+    print_test("spades",   spades,   !IO),
+    print_test("clubs",    clubs,    !IO).
+
+:- pred print_test(string::in, T::in, io::di, io::uo) is det.
+
+print_test(Name, Entity, !IO) :-
+    io.print(Name, !IO),
+    io.print(" = ", !IO),
+    write_doc(format(Entity), !IO),
+    io.nl(!IO).
+
 
 %----------------------------------------------------------------------------%
 :- end_module test_skat.

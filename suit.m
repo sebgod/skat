@@ -12,12 +12,74 @@
 
 :- interface.
 
+:- import_module pretty_printer.
+
+%----------------------------------------------------------------------------%
+
+
+:- type suit
+    ---> diamonds
+    ;    hearts
+    ;    spades
+    ;    clubs.
+
+:- func suit_to_doc(suit) = doc.
+
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
+:- import_module coloured_pretty_printer.
+:- import_module io.
+:- import_module list.
+:- import_module require.
+
 %----------------------------------------------------------------------------%
+%
+% Pretty printing
+%
+
+:- func suit_symbol(suit) = string.
+
+suit_symbol(Suit) = Symbol :- suit_symbol(Suit, Symbol).
+
+:- pred suit_symbol(suit, string).
+:- mode suit_symbol(in, out) is det.
+:- mode suit_symbol(out, in) is semidet.
+
+suit_symbol(diamonds, "♦").
+suit_symbol(hearts,   "♥").
+suit_symbol(spades,   "♠").
+suit_symbol(clubs,    "♣").
+
+:- func suit_colour(suit) = ansi_colour.
+
+suit_colour(Suit) = Colour :- suit_colour(Suit, Colour).
+
+:- pred suit_colour(suit, ansi_colour).
+:- mode suit_colour(in, out) is det.
+:- mode suit_colour(out, in) is semidet.
+
+suit_colour(diamonds, yellow).
+suit_colour(hearts,   red).
+suit_colour(spades,   green).
+suit_colour(clubs,    black).
+
+suit_to_doc(Suit) =
+    white_bg(fg(ansi(suit_colour(Suit)), str(suit_symbol(Suit)))).
+
+
+:- initialise init/2.
+
+:- pred init(io::di, io::uo) is det.
+
+init(!IO) :-
+    update_formatters(
+        [
+            fmt("skat.suit", "suit", 0, fmt_any(suit_to_doc))
+        ], !IO).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.suit.
