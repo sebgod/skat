@@ -4,7 +4,7 @@
 % File: test_skat.m
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
-% Created on: Sun 01 Jun 10:38:01 CEST 2014
+% Created on: Sun  1 Jun 10:38:01 CEST 2014
 %
 %----------------------------------------------------------------------------%
 
