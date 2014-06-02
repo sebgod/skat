@@ -12,19 +12,13 @@
 
 :- interface.
 
-:- import_module pretty_printer.
-
 %----------------------------------------------------------------------------%
-
 
 :- type suit
     ---> diamonds
     ;    hearts
     ;    spades
     ;    clubs.
-
-:- func suit_to_doc(suit) = doc.
-
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -34,6 +28,7 @@
 :- import_module coloured_pretty_printer.
 :- import_module io.
 :- import_module list.
+:- import_module pretty_printer.
 :- import_module require.
 :- import_module std_util.
 
@@ -67,6 +62,8 @@ suit_colour(diamonds, yellow).
 suit_colour(hearts,   red).
 suit_colour(spades,   green).
 suit_colour(clubs,    black).
+
+:- func suit_to_doc(suit) = doc.
 
 suit_to_doc(Suit) = Doc :-
     SuitFgAndBg = compose(

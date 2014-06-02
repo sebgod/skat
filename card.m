@@ -1,20 +1,27 @@
 %----------------------------------------------------------------------------%
 % vim: ft=mercury ff=unix ts=4 sw=4 et
 %----------------------------------------------------------------------------%
-% File: skat.m
+% File: card.m
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
-% Created on: Sun  1 Jun 10:26:26 CEST 2014
+% Created on: Mon  2 Jun 21:18:58 CEST 2014
 %
 %----------------------------------------------------------------------------%
 
-:- module skat.
+:- module skat.card.
 
 :- interface.
 
-:- include_module skat.card.
-:- include_module skat.rank.
-:- include_module skat.suit.
+:- import_module skat.rank.
+:- import_module skat.suit.
+
+%----------------------------------------------------------------------------%
+
+:- type card
+    ---> card(
+            card_rank :: rank,
+            card_suit :: suit
+         ).
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -22,7 +29,8 @@
 :- implementation.
 
 %----------------------------------------------------------------------------%
+
 %----------------------------------------------------------------------------%
-:- end_module skat.
+:- end_module skat.card.
 % -*- Mode: Mercury; column: 80; indent-tabs-mode: nil; tabs-width: 4 -*-
 %----------------------------------------------------------------------------%

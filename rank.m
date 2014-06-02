@@ -1,20 +1,28 @@
 %----------------------------------------------------------------------------%
 % vim: ft=mercury ff=unix ts=4 sw=4 et
 %----------------------------------------------------------------------------%
-% File: skat.m
+% File: rank.m
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
-% Created on: Sun  1 Jun 10:26:26 CEST 2014
+% Created on: Mon  2 Jun 21:12:58 CEST 2014
 %
 %----------------------------------------------------------------------------%
 
-:- module skat.
+:- module skat.rank.
 
 :- interface.
 
-:- include_module skat.card.
-:- include_module skat.rank.
-:- include_module skat.suit.
+%----------------------------------------------------------------------------%
+
+:- type rank
+    ---> jack
+    ;    ace
+    ;    ten
+    ;    king
+    ;    queen
+    ;    nine
+    ;    eight
+    ;    seven.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -22,7 +30,8 @@
 :- implementation.
 
 %----------------------------------------------------------------------------%
+
 %----------------------------------------------------------------------------%
-:- end_module skat.
+:- end_module skat.rank.
 % -*- Mode: Mercury; column: 80; indent-tabs-mode: nil; tabs-width: 4 -*-
 %----------------------------------------------------------------------------%

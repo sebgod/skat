@@ -9,9 +9,10 @@ test: test_skat
 		./$$test_case ; \
 	done
 
+skat.m: card.m suit.m rank.m
+
 .PHONY: libskat
-libskat: skat.m suit.m
-	@echo $^
+libskat: skat.m
 	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS)
 
 test_skat: libskat test_skat.m
