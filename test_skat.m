@@ -27,14 +27,18 @@
 :- import_module pretty_printer.
 :- import_module skat.
 :- import_module skat.suit.
+:- import_module skat.rank.
+:- import_module skat.card.
 
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
     print_test("diamonds", diamonds, !IO),
-    print_test("hearts  ", hearts,   !IO),
-    print_test("spades  ", spades,   !IO),
-    print_test("clubs   ", clubs,    !IO).
+    print_test("hearts",   hearts,   !IO),
+    print_test("spades",   spades,   !IO),
+    print_test("clubs",    clubs,    !IO),
+    print_test("ace of spades", card(ace, spades), !IO),
+    print_test("queen of hearts", card(queen, hearts), !IO).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
