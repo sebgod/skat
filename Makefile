@@ -1,15 +1,17 @@
 MMC=mmc
+SUDO=sudo
 MCFLAGS=--use-grade-subdirs -O3
 MLLIBS=--ml mercury_misc
 
-SKAT_SUBS := $(wildcard *.m)
-
 .PHONY: test
 test: test_skat
-	@./$<
+	@for test_case in $^ ; do \
+		./$$test_case ; \
+	done
 
 .PHONY: libskat
-libskat: skat.m $(SKATS_SUBS)
+libskat: skat.m suit.m
+	@echo $^
 	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS)
 
 test_skat: libskat test_skat.m
@@ -17,7 +19,9 @@ test_skat: libskat test_skat.m
 
 .PHONY: install
 install: libskat
-	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $<.install
+	@for lib in $^ ; do \
+		$(SUDO) $(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $$lib.install ; \
+	done
 
 .PHONY: clean
 clean:
