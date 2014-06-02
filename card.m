@@ -28,7 +28,31 @@
 
 :- implementation.
 
+:- import_module coloured_pretty_printer.
+:- import_module io.
+:- import_module list.
+:- import_module pretty_printer.
+:- import_module require.
+:- import_module std_util.
+
 %----------------------------------------------------------------------------%
+%
+% Pretty printing
+%
+
+:- func card_to_doc(suit) = doc.
+
+card_to_doc(_Card) = str("[]").
+
+:- initialise init/2.
+
+:- pred init(io::di, io::uo) is det.
+
+init(!IO) :-
+    update_formatters(
+        [
+            fmt($module, "card", 0, fmt_any(card_to_doc))
+        ], !IO).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.card.

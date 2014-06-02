@@ -12,6 +12,8 @@
 
 :- interface.
 
+:- import_module coloured_pretty_printer.
+
 %----------------------------------------------------------------------------%
 
 :- type suit
@@ -20,24 +22,24 @@
     ;    spades
     ;    clubs.
 
+:- func (suit ^ suit_symbol) = string.
+
+:- func (suit ^ suit_colour) = ansi_colour.
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module coloured_pretty_printer.
 :- import_module io.
 :- import_module list.
 :- import_module pretty_printer.
 :- import_module require.
-:- import_module std_util.
 
 %----------------------------------------------------------------------------%
 %
 % Pretty printing
 %
-
-:- func (suit ^ suit_symbol) = string.
 
 Suit ^ suit_symbol = Symbol :- suit_symbol(Suit, Symbol).
 
@@ -50,7 +52,6 @@ suit_symbol(hearts,   "♥").
 suit_symbol(spades,   "♠").
 suit_symbol(clubs,    "♣").
 
-:- func (suit ^ suit_colour) = ansi_colour.
 
 Suit ^ suit_colour = Colour :- suit_colour(Suit, Colour).
 
@@ -65,17 +66,8 @@ suit_colour(clubs,    black).
 
 :- func suit_to_doc(suit) = doc.
 
-suit_to_doc(Suit) = Doc :-
-    SuitFgAndBg = compose(
-        ( Suit^suit_colour = black ->
-            white_fg
-        ;
-            fg(ansi(Suit^suit_colour, normal))
-        ),
-        black_bg
-    ),
-    Doc = SuitFgAndBg(str(Suit^suit_symbol)).
-
+suit_to_doc(Suit) =
+    colour_on_black(ansi(Suit^suit_colour, normal), str(Suit^suit_symbol)).
 
 :- initialise init/2.
 
