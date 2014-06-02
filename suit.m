@@ -70,8 +70,12 @@ suit_colour(clubs,    black).
 
 suit_to_doc(Suit) = Doc :-
     SuitFgAndBg = compose(
-        fg(ansi(Suit^suit_colour, normal)),
-        ( if Suit^suit_colour = black then grey_bg else black_bg )
+        ( Suit^suit_colour = black ->
+            white_fg
+        ;
+            fg(ansi(Suit^suit_colour, normal))
+        ),
+        black_bg
     ),
     Doc = SuitFgAndBg(str(Suit^suit_symbol)).
 
