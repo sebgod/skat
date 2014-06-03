@@ -47,29 +47,26 @@
 card_to_doc(Card) = colour_on_black(Colour, str(char_to_string(Symbol))) :-
     Suit = Card^card_suit,
     Colour = ansi(Suit^suit_colour, normal),
-    rank_offset(Card^card_rank, RankOffset),
-    suit_offset(Suit, SuitOffset),
-    Symbol = det_from_int(0x1f000 + RankOffset + SuitOffset).
+    Symbol = det_from_int(0x1f000 +
+        rank_offset(Card^card_rank) + suit_offset(Suit)).
 
-:- pred rank_offset(rank, int).
-:- mode rank_offset(in, out) is det.
+:- func rank_offset(rank) = int.
 
-rank_offset(ace, 1).
-rank_offset(seven, 7).
-rank_offset(eight, 8).
-rank_offset(nine, 9).
-rank_offset(ten, 0xa).
-rank_offset(jack, 0xb).
-rank_offset(queen, 0xd).
-rank_offset(king, 0xe).
+rank_offset(ace)   = 1.
+rank_offset(seven) = 7.
+rank_offset(eight) = 8.
+rank_offset(nine)  = 9.
+rank_offset(ten)   = 0xa.
+rank_offset(jack)  = 0xb.
+rank_offset(queen) = 0xd.
+rank_offset(king)  = 0xe.
 
-:- pred suit_offset(suit, int).
-:- mode suit_offset(in, out) is det.
+:- func suit_offset(suit) = int.
 
-suit_offset(spades, 0xa0).
-suit_offset(hearts, 0xb0).
-suit_offset(diamonds, 0xc0).
-suit_offset(clubs, 0xd0).
+suit_offset(spades)   = 0xa0.
+suit_offset(hearts)   = 0xb0.
+suit_offset(diamonds) = 0xc0.
+suit_offset(clubs)    = 0xd0.
 
 :- initialise init/2.
 
