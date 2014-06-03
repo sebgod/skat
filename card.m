@@ -19,7 +19,10 @@
 
 :- type card ---> card(rank, suit).
 
-:- typeclass card(T).
+:- typeclass card(T) where [
+    func card(T) = card,
+    func index(T) = int
+].
 
 :- func (T ^ card_rank) = rank <= card(T).
 
@@ -40,6 +43,7 @@
 :- import_module list.
 :- import_module pretty_printer.
 :- import_module require.
+:- import_module std_util.
 :- import_module string.
 
 %----------------------------------------------------------------------------%
@@ -47,34 +51,34 @@
 % card typeclass
 %
 
-:- typeclass card(T) where [
-    func card(T) = card
-].
-
 (Card ^ card_rank) = Rank :- card(Rank, _Suit) = card(Card).
 
 (Card ^ card_suit) = Suit :- card(_Rank, Suit) = card(Card).
 
 :- instance card(card) where [
-    (card(Card) = Card)
+    (card(Card) = Card),
+    (index(card(Rank, Suit)) =
+        (rank_index(Rank) << 2) /\ suit_index(Suit)
+    )
 ].
 
 :- instance card(int) where [
     (card(CodedCard) =
         ( suit_index(Suit) = CodedCard /\ 0b11,
-          rank_index(Rank) = (CodedCard >> 0b11) /\ 0b1111
+          rank_index(Rank) = (CodedCard >> 2) /\ 0b1111
         ->
             card(Rank, Suit)
         ;
             unexpected($file, $pred,
                 format("card_index %d is invalid", [i(CodedCard)]))
         )
-    )
+    ),
+    func(index/1) is id
 ].
 
 :- func rank_index(rank) = int.
-:- mode rank_index(in) = out is det.
-:- mode rank_index(out) = in is semidet.
+:- mode rank_index(in)   = out is det.
+:- mode rank_index(out)  = in  is semidet.
 
 rank_index(ace)   = 0.
 rank_index(ten)   = 1.
@@ -86,8 +90,8 @@ rank_index(eight) = 6.
 rank_index(seven) = 7.
 
 :- func suit_index(suit) = int.
-:- mode suit_index(in) = out is det.
-:- mode suit_index(out) = in is semidet.
+:- mode suit_index(in)   = out is det.
+:- mode suit_index(out)  = in  is semidet.
 
 suit_index(clubs)    = 0.
 suit_index(spades)   = 1.

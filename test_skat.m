@@ -40,7 +40,7 @@ main(!IO) :-
     print_test("clubs",    clubs,    !IO),
     print_test("ace of spades", card(ace, spades), !IO),
     print_test("queen of hearts", card(queen, hearts), !IO),
-    print_test("all cards", all_cards, !IO).
+    print_test("list of all cards", to_list(all_cards), !IO).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
