@@ -12,3 +12,4 @@ tags
 *.dylib
 *.beams
 *.jar
+*.out

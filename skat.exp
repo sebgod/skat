@@ -1,0 +1,6 @@
+diamonds = [0;33m[40m♦[0m[0m
+hearts = [0;31m[40m♥[0m[0m
+spades = [0;32m[40m♠[0m[0m
+clubs = [1;37m[40m♣[0m[0m
+ace of spades = [0;32m[40m🂡[0m[0m
+queen of hearts = [0;31m[40m🂽[0m[0m

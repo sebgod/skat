@@ -1,13 +1,22 @@
 MMC=mmc
 SUDO=sudo
+DIFF=diff -d
 MCFLAGS=--use-grade-subdirs -O3
 MLLIBS=--ml mercury_misc
 
 .PHONY: test
-test: test_skat
-	@for test_case in $^ ; do \
-		./$$test_case ; \
-	done
+test: skat.out
+
+.PHONY: exps
+exps: skat.exp
+
+%.exp: test_%
+	@./$< >$@
+
+%.out: test_%
+	@./$< >$@
+	@printf "Testing $*: "
+	@$(DIFF) $*.exp $@ || ( rm $@ && echo failed ) && echo success
 
 skat.m: card.m suit.m rank.m
 
@@ -26,6 +35,7 @@ install: libskat
 
 .PHONY: clean
 clean:
+	rm -f *.out
 	rm -f *.init
 	rm -f *.mh
 	rm -f *.err
