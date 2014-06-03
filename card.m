@@ -17,11 +17,16 @@
 
 %----------------------------------------------------------------------------%
 
-:- type card
-    ---> card(
-            card_rank :: rank,
-            card_suit :: suit
-         ).
+:- type card ---> card(rank, suit).
+
+:- typeclass card(T).
+
+:- func (T ^ card_rank) = rank <= card(T).
+
+:- func (T ^ card_suit) = suit <= card(T).
+
+:- instance card(card).
+:- instance card(int).
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -39,16 +44,67 @@
 
 %----------------------------------------------------------------------------%
 %
+% card typeclass
+%
+
+:- typeclass card(T) where [
+    func card(T) = card
+].
+
+(Card ^ card_rank) = Rank :- card(Rank, _Suit) = card(Card).
+
+(Card ^ card_suit) = Suit :- card(_Rank, Suit) = card(Card).
+
+:- instance card(card) where [
+    (card(Card) = Card)
+].
+
+:- instance card(int) where [
+    (card(CodedCard) =
+        ( suit_index(Suit) = CodedCard /\ 0b11,
+          rank_index(Rank) = (CodedCard >> 0b11) /\ 0b1111
+        ->
+            card(Rank, Suit)
+        ;
+            unexpected($file, $pred,
+                format("card_index %d is invalid", [i(CodedCard)]))
+        )
+    )
+].
+
+:- func rank_index(rank) = int.
+:- mode rank_index(in) = out is det.
+:- mode rank_index(out) = in is semidet.
+
+rank_index(ace)   = 0.
+rank_index(ten)   = 1.
+rank_index(king)  = 2.
+rank_index(queen) = 3.
+rank_index(jack)  = 4.
+rank_index(nine)  = 5.
+rank_index(eight) = 6.
+rank_index(seven) = 7.
+
+:- func suit_index(suit) = int.
+:- mode suit_index(in) = out is det.
+:- mode suit_index(out) = in is semidet.
+
+suit_index(clubs)    = 0.
+suit_index(spades)   = 1.
+suit_index(hearts)   = 2.
+suit_index(diamonds) = 3.
+
+%----------------------------------------------------------------------------%
+%
 % Pretty printing
 %
 
 :- func card_to_doc(card) = doc.
 
-card_to_doc(Card) = colour_on_black(Colour, str(char_to_string(Symbol))) :-
-    Suit = Card^card_suit,
+card_to_doc(card(Rank, Suit)) = colour_on_black(Colour, CardDoc) :-
     Colour = ansi(Suit^suit_colour, normal),
-    Symbol = det_from_int(0x1f000 +
-        rank_offset(Card^card_rank) + suit_offset(Suit)).
+    CardChar = det_from_int(0x1f000 + rank_offset(Rank) + suit_offset(Suit)),
+    CardDoc = str(char_to_string(CardChar)).
 
 :- func rank_offset(rank) = int.
 
