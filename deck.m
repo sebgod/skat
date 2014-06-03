@@ -1,29 +1,36 @@
 %----------------------------------------------------------------------------%
 % vim: ft=mercury ff=unix ts=4 sw=4 et
 %----------------------------------------------------------------------------%
-% File: skat.m
+% File: deck.m
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
-% Created on: Sun  1 Jun 10:26:26 CEST 2014
+% Created on: Tue Jun  3 14:21:05 CEST 2014
 %
 %----------------------------------------------------------------------------%
 
-:- module skat.
+:- module skat.deck.
 
 :- interface.
 
-:- include_module skat.card.
-:- include_module skat.deck.
-:- include_module skat.rank.
-:- include_module skat.suit.
+%----------------------------------------------------------------------------%
+
+:- type deck.
+
+:- func all_cards = deck.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
+:- type deck
+    ---> deck(int).
+
+all_cards = deck(0xffffffff).
+
 %----------------------------------------------------------------------------%
+
 %----------------------------------------------------------------------------%
-:- end_module skat.
+:- end_module skat.deck.
 % -*- Mode: Mercury; column: 80; indent-tabs-mode: nil; tabs-width: 4 -*-
 %----------------------------------------------------------------------------%

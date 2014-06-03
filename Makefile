@@ -16,9 +16,9 @@ exps: skat.exp
 %.out: test_%
 	@./$< >$@
 	@printf "Testing $*: "
-	@$(DIFF) $*.exp $@ || ( rm $@ && echo failed ) && echo success
+	@( $(DIFF) $*.exp $@ && echo success ) || ( rm $@ && echo failed )
 
-skat.m: card.m suit.m rank.m
+skat.m: card.m suit.m rank.m deck.m
 
 .PHONY: libskat
 libskat: skat.m
