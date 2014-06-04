@@ -94,7 +94,6 @@ index_to_card(Index) = card(Index).
 :- func deck_to_doc(deck) = doc.
 
 deck_to_doc(Deck) = group(format `map` to_fat_list(Deck)).
-%    format_list(map_to_univ(to_fat_list(Deck)), empty_str).
 
 :- initialise init_deck/2.
 

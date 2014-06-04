@@ -106,7 +106,7 @@ suit_index(diamonds) = 3.
 card_to_doc(card(Rank, Suit)) = colour_on_black(Colour, CardDoc) :-
     Colour = ansi(Suit^suit_colour, normal),
     CardChar = det_from_int(0x1f000 + rank_offset(Rank) + suit_offset(Suit)),
-    CardDoc = str(char_to_string(CardChar)).
+    CardDoc = str(char_to_string(CardChar) ++ "\u202f").
 
 :- func rank_offset(rank) = int.
 
