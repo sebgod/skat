@@ -21,7 +21,7 @@
 
 :- typeclass card(T) where [
     func card(T) = card,
-    func index(T) = int
+    func index(T) = int is det
 ].
 
 :- func (T ^ card_rank) = rank <= card(T).
@@ -57,20 +57,18 @@
 
 :- instance card(card) where [
     (card(Card) = Card),
-    (index(card(Rank, Suit)) =
-        (rank_index(Rank) << 2) /\ suit_index(Suit)
-    )
+    (index(card(Rank, Suit)) = (suit_index(Suit) << 3) /\ rank_index(Rank))
 ].
 
 :- instance card(int) where [
-    (card(CodedCard) =
-        ( suit_index(Suit) = CodedCard /\ 0b11,
-          rank_index(Rank) = (CodedCard >> 2) /\ 0b1111
+    (card(Index) =
+        ( suit_index(Suit) = (Index >> 3) /\ 0b11,
+          rank_index(Rank) =  Index       /\ 0b111
         ->
             card(Rank, Suit)
         ;
             unexpected($file, $pred,
-                format("card_index %d is invalid", [i(CodedCard)]))
+                format("card_index %x is invalid", [i(Index)]))
         )
     ),
     func(index/1) is id
