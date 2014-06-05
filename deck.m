@@ -20,6 +20,8 @@
 
 :- type deck.
 
+:- func deck_size = int.
+
 :- func all_cards = deck.
 :- mode all_cards = out is det.
 :- mode all_cards = in  is semidet.
@@ -33,12 +35,12 @@
 :- mode contains_card(in, in) is semidet.
 
 :- some [T] pred member_card(T, deck) => (card(T), enum(T)).
+:- mode member_card(in, in) is cc_nondet.
 :- mode member_card(out, in) is nondet.
 
-:- some[T] pred draw_card(T, deck, deck, supply, supply)
-    => (card(T), enum(T)).
-:- mode draw_card(out, in, out, mdi, muo) is semidet.
-:- mode draw_card(out, in, out, in, out) is semidet.
+:- some [T] func draw_card(deck, deck, supply, supply) = T => (card(T), enum(T)).
+:- mode draw_card(in, out, mdi, muo) = out is semidet.
+:- mode draw_card(in, out, in, out)  = out is semidet.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -50,58 +52,72 @@
 :- import_module io.
 :- import_module list.
 :- import_module pretty_printer.
-:- import_module tree_bitset.
 :- import_module univ.
+:- import_module require.
+:- import_module std_util.
 
 %----------------------------------------------------------------------------%
 
-:- type deck
-    ---> deck(tree_bitset(int)).
+:- type deck ---> deck(int).
 
-all_cards = deck(!:AllCards) :-
-    deck(!:AllCards) = no_cards,
-    insert_list(0 `..` 31, !AllCards).
+deck_size = 32.
 
-no_cards = deck(Empty) :- empty(Empty).
+all_cards = deck(0xffffffff).
 
-contains_card(deck(Deck), Card) :- contains(Deck, index(Card)).
+no_cards = deck(0).
 
-member_card(Card, deck(Deck)) :- tree_bitset.member(Card, Deck).
+contains_card(deck(Cards), Card) :-
+    Cards \= 0,
+    0 \= Cards /\ (1 << index(Card)).
 
-% XXX: This implementation is just a mockup, it would be better to use an
-% int for the deck. This seems to be a huge waste of memory and CPU.
-%
-draw_card(Card, !Deck, !Supply) :-
+member_card(Card, deck(Cards)) :-
+    member_bit(Card, 0, Cards).
+
+:- pred member_bit(int, int, int).
+:- mode member_bit(out, in, in) is nondet.
+:- mode member_bit(in, in, in) is semidet.
+
+member_bit(Card, Index, Cards) :-
+    Cards /\ 1 = 1,
+    Card = deck_size - Index.
+
+member_bit(Card, Index, Cards) :-
+    Cards \= 0,
+    Cards /\ 1 = 0,
+    member_bit(Card, Index + 1, Cards >> 1).
+
+draw_card(!Deck, !Supply) = CardIndex :-
     !.Deck \= no_cards,
-    CardList = to_list(!.Deck),
-    random(0, length(CardList), CardIndex, !Supply),
-    det_split_list(CardIndex - 1, CardList, CardsLeft, [Card | CardsRight]),
-    !:Deck = deck(sorted_list_to_set(map(index, CardsLeft ++ CardsRight))).
+    deck(Cards) = !.Deck,
+    random(0, deck_size, CardIndex, !Supply),
+    ( contains_card(!.Deck, CardIndex) ->
+        !:Deck = deck(Cards `xor` (1 << CardIndex))
+    ;
+        CardIndex = index(draw_card(!.Deck, !:Deck, !.Supply, !:Supply))
+    ).
 
 %----------------------------------------------------------------------------%
 %
 % Module private auxilary functions
 %
 
-:- some [T] func to_list(deck) = list(T) => (card(T), enum(T)).
+:- func valid_card_indices = list(int).
 
-to_list(deck(Deck)) = to_sorted_list(Deck).
+valid_card_indices = 0 `..` (deck_size - 1).
 
-:- func to_fat_list(deck) = list(card).
+:- func indices_in_deck(deck) = list(int). % <= (card(T), enum(T)).
 
-to_fat_list(deck(Deck)) = index_to_card `map` to_sorted_list(Deck).
-
-:- func index_to_card(int) = card.
-
-index_to_card(Index) = card(Index).
+indices_in_deck(Deck) =
+    filter(contains_card(Deck), valid_card_indices).
 
 %----------------------------------------------------------------------------%
 %
 % Pretty printing
 %
+
 :- func deck_to_doc(deck) = doc.
 
-deck_to_doc(Deck) = group(format `map` to_fat_list(Deck)).
+deck_to_doc(Deck) = group(map(format `compose` card, indices_in_deck(Deck))).
 
 :- initialise init_deck/2.
 

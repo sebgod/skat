@@ -47,7 +47,7 @@ main(!IO) :-
     print_test("all cards", all_cards, !IO),
     print_test("no cards", no_cards, !IO),
     (
-        draw_card(Drawn, all_cards, AllMinusOne, Supply, _)
+        Drawn = draw_card(all_cards, AllMinusOne, Supply, _)
     ->
         print_test("drawn card", card(Drawn), !IO),
         print_test("left in deck", AllMinusOne, !IO)

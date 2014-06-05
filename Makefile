@@ -1,7 +1,7 @@
 MMC=mmc
 SUDO=sudo
 DIFF=diff -d
-MCFLAGS=--use-grade-subdirs -O3
+MCFLAGS=--use-grade-subdirs -O3 -E
 MLLIBS=--ml mercury_misc
 
 .PHONY: test
