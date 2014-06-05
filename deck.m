@@ -35,8 +35,10 @@
 :- some [T] pred member_card(T, deck) => (card(T), enum(T)).
 :- mode member_card(out, in) is nondet.
 
-:- some[T] func draw_card(deck, supply, supply) = T => (card(T), enum(T)).
-:- mode draw_card(in, di, uo) = out is semidet.
+:- some[T] pred draw_card(T, deck, deck, supply, supply)
+    => (card(T), enum(T)).
+:- mode draw_card(out, in, out, mdi, muo) is semidet.
+:- mode draw_card(out, in, out, in, out) is semidet.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -66,9 +68,15 @@ contains_card(deck(Deck), Card) :- contains(Deck, index(Card)).
 
 member_card(Card, deck(Deck)) :- tree_bitset.member(Card, Deck).
 
-draw_card(Deck, !Supply) = Card :-
-    Deck \= no_cards,
-    [Card | _] = to_list(Deck).
+% XXX: This implementation is just a mockup, it would be better to use an
+% int for the deck. This seems to be a huge waste of memory and CPU.
+%
+draw_card(Card, !Deck, !Supply) :-
+    !.Deck \= no_cards,
+    CardList = to_list(!.Deck),
+    random(0, length(CardList), CardIndex, !Supply),
+    det_split_list(CardIndex - 1, CardList, CardsLeft, [Card | CardsRight]),
+    !:Deck = deck(sorted_list_to_set(map(index, CardsLeft ++ CardsRight))).
 
 %----------------------------------------------------------------------------%
 %

@@ -24,7 +24,10 @@
 %----------------------------------------------------------------------------%
 
 :- import_module list.
+:- import_module pair.
 :- import_module pretty_printer.
+:- use_module random.
+:- import_module require.
 :- import_module skat.
 :- import_module skat.deck.
 :- import_module skat.suit.
@@ -34,6 +37,7 @@
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
+    random.init(2312384324, Supply),
     print_test("diamonds", diamonds, !IO),
     print_test("hearts",   hearts,   !IO),
     print_test("spades",   spades,   !IO),
@@ -41,7 +45,15 @@ main(!IO) :-
     print_test("ace of spades", card(ace, spades), !IO),
     print_test("queen of hearts", card(queen, hearts), !IO),
     print_test("all cards", all_cards, !IO),
-    print_test("no cards", no_cards, !IO).
+    print_test("no cards", no_cards, !IO),
+    (
+        draw_card(Drawn, all_cards, AllMinusOne, Supply, _)
+    ->
+        print_test("drawn card", card(Drawn), !IO),
+        print_test("left in deck", AllMinusOne, !IO)
+    ;
+        unexpected($file, $pred, "draw_card/5 should not have failed!")
+    ).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
@@ -50,7 +62,6 @@ print_test(Name, Entity, !IO) :-
     io.print(" = ", !IO),
     write_doc(format(Entity), !IO),
     io.nl(!IO).
-
 
 %----------------------------------------------------------------------------%
 :- end_module test_skat.
