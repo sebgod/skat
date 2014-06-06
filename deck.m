@@ -35,6 +35,7 @@
 :- mode contains_card(in, in) is semidet.
 
 :- some [T] pred member_card(T, deck) => (card(T), enum(T)).
+%:- pred member_card(T, deck) <= (card(T), enum(T)).
 :- mode member_card(in, in) is cc_nondet.
 :- mode member_card(out, in) is nondet.
 

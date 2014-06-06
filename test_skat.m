@@ -50,9 +50,14 @@ main(!IO) :-
         Drawn = draw_card(deck_all, AllMinusOne, Supply, _)
     ->
         print_test("drawn card", card(Drawn), !IO),
-        print_test("left in deck", AllMinusOne, !IO)
+        print_test("left in deck", AllMinusOne, !IO),
+        ( contains_card(AllMinusOne, Drawn) ->
+            unexpected($file, $pred, "the drawn card should not be a member")
+        ;
+            true
+        )
     ;
-        unexpected($file, $pred, "draw_card/5 should not have failed!")
+        unexpected($file, $pred, "draw_card/4 should not have failed!")
     ).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
