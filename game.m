@@ -1,36 +1,37 @@
 %----------------------------------------------------------------------------%
 % vim: ft=mercury ff=unix ts=4 sw=4 et
 %----------------------------------------------------------------------------%
-% File: rank.m
+% File: game.m
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
-% Created on: Mon  2 Jun 21:12:58 CEST 2014
-%
+% Created on: Fri  6 Jun 22:57:03 CEST 2014
+% Stability: low
+%----------------------------------------------------------------------------%
+% TODO: module documentation
 %----------------------------------------------------------------------------%
 
-:- module skat.rank.
+:- module skat.game.
 
 :- interface.
 
+% TODO: include/import/use modules
+
 %----------------------------------------------------------------------------%
 
-:- type rank
-    ---> jack
-    ;    ace
-    ;    ten
-    ;    king
-    ;    queen
-    ;    nine
-    ;    eight
-    ;    seven.
+% TODO: insert predicates & functions
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
-%----------------------------------------------------------------------------%
+% TODO: include/import/use modules
 
 %----------------------------------------------------------------------------%
-:- end_module skat.rank.
+
+% TODO: implement predicates & functions
+
+%----------------------------------------------------------------------------%
+:- end_module skat.game.
+% -*- Mode: Mercury; column: 80; indent-tabs-mode: nil; tabs-width: 4 -*-
 %----------------------------------------------------------------------------%
