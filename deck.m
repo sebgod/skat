@@ -22,13 +22,13 @@
 
 :- func deck_size = int.
 
-:- func all_cards = deck.
-:- mode all_cards = out is det.
-:- mode all_cards = in  is semidet.
+:- func deck_all = deck.
+:- mode deck_all = out is det.
+:- mode deck_all = in  is semidet.
 
-:- func no_cards = deck.
-:- mode no_cards = out is det.
-:- mode no_cards = in  is semidet.
+:- func deck_empty = deck.
+:- mode deck_empty = out is det.
+:- mode deck_empty = in  is semidet.
 
 
 :- pred contains_card(deck, T)  <= (card(T), enum(T)).
@@ -62,9 +62,9 @@
 
 deck_size = 32.
 
-all_cards = deck(0xffffffff).
+deck_all = deck(0xffffffff).
 
-no_cards = deck(0).
+deck_empty = deck(0).
 
 contains_card(deck(Cards), Card) :-
     Cards \= 0,
@@ -87,7 +87,7 @@ member_bit(Card, Index, Cards) :-
     member_bit(Card, Index + 1, Cards >> 1).
 
 draw_card(!Deck, !Supply) = CardIndex :-
-    !.Deck \= no_cards,
+    !.Deck \= deck_empty,
     deck(Cards) = !.Deck,
     random(0, deck_size, CardIndex, !Supply),
     ( contains_card(!.Deck, CardIndex) ->

@@ -44,10 +44,10 @@ main(!IO) :-
     print_test("clubs",    clubs,    !IO),
     print_test("ace of spades", card(ace, spades), !IO),
     print_test("queen of hearts", card(queen, hearts), !IO),
-    print_test("all cards", all_cards, !IO),
-    print_test("no cards", no_cards, !IO),
+    print_test("all cards", deck_all, !IO),
+    print_test("no cards", deck_empty, !IO),
     (
-        Drawn = draw_card(all_cards, AllMinusOne, Supply, _)
+        Drawn = draw_card(deck_all, AllMinusOne, Supply, _)
     ->
         print_test("drawn card", card(Drawn), !IO),
         print_test("left in deck", AllMinusOne, !IO)
