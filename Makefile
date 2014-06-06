@@ -18,13 +18,11 @@ exps: skat.exp
 	@printf "Testing $*: "
 	@( $(DIFF) $*.exp $@ && echo success ) || ( rm $@ && echo failed )
 
-skat.m: card.m suit.m rank.m deck.m
-
 .PHONY: libskat
-libskat: skat.m
+libskat:
 	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS)
 
-test_skat: libskat test_skat.m
+test_%: libskat test_%.m
 	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS)
 
 .PHONY: install
