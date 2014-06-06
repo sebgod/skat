@@ -1,6 +1,6 @@
 MMC=mmc
 SUDO=sudo
-DIFF=diff -d
+DIFF=diff -d --strip-trailing-cr
 MCFLAGS=--use-grade-subdirs -O3 -E
 MLLIBS=--ml mercury_misc
 
