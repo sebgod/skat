@@ -37,7 +37,7 @@
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
-    random.init(2312384324, Supply),
+    random.init(231238, Supply),
     print_test("diamonds", diamonds, !IO),
     print_test("hearts",   hearts,   !IO),
     print_test("spades",   spades,   !IO),
