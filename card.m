@@ -30,6 +30,8 @@
 
 :- func det_from_int(int) = card.
 
+:- func to_offset(card) = int.
+
 :- func number_of_cards = int.
 
 %----------------------------------------------------------------------------%
@@ -76,6 +78,8 @@ det_from_int(Index) = Card :-
         unexpected($file, $pred,
             format("card_index %x is not in range [0..31]", [i(Index)]))
     ).
+
+to_offset(Card) = 1 << to_int(Card).
 
 (card(Index) ^ card_rank) = Rank :-
     (

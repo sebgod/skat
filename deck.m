@@ -57,7 +57,6 @@
 :- implementation.
 
 :- import_module coloured_pretty_printer.
-:- use_module enum.
 :- import_module int.
 :- import_module io.
 :- import_module list.
@@ -75,7 +74,7 @@ deck_empty = deck(0).
 
 contains_card(deck(Cards), Card) :-
     Cards \= 0,
-    0 \= Cards /\ (1 << enum.to_int(Card)).
+    0 \= Cards /\ to_offset(Card).
 
 member_card(Card, deck(Cards)) :-
     Card = det_from_int(Index),
@@ -99,7 +98,7 @@ draw_card(!Deck, !Supply) = Card :-
     deck(Cards) = !.Deck,
     next_card(RandCard, !Supply),
     ( contains_card(!.Deck, RandCard) ->
-        !:Deck = deck(Cards `xor` (1 << enum.to_int(RandCard))),
+        !:Deck = deck(Cards `xor` to_offset(RandCard)),
         Card = RandCard
     ;
         Card = draw_card(!.Deck, !:Deck, !.Supply, !:Supply)
@@ -132,12 +131,12 @@ det_draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
 
 draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
     ( NumberOfCards > 0 ->
-        CardIndex = enum.to_int(
+        CardOffset = to_offset(
             draw_card(!.Deck, !:Deck, !.Supply, !:Supply)),
         draw_cards2(NumberOfCards - 1, !.Drawn, !:Drawn,
             !.Deck, !:Deck, !.Supply, !:Supply),
         deck(AlreadyDrawn) = !.Drawn,
-        !:Drawn = deck(AlreadyDrawn \/ (1 << CardIndex))
+        !:Drawn = deck(AlreadyDrawn \/ CardOffset)
     ; NumberOfCards < 0 ->
         unexpected($file, $pred, "NumberOfCards must be positive")
     ;
