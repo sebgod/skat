@@ -35,6 +35,14 @@
 :- mode member_card(in, in) is semidet.
 :- mode member_card(out, in) is nondet.
 
+:- func draw_cards(int, deck, deck, supply, supply) = deck.
+:- mode draw_cards(in, in, out, mdi, muo) = out is semidet.
+:- mode draw_cards(in, in, out, in, out)  = out is semidet.
+
+:- func det_draw_cards(int, deck, deck, supply, supply) = deck.
+:- mode det_draw_cards(in, in, out, mdi, muo) = out is det.
+:- mode det_draw_cards(in, in, out, in, out)  = out is det.
+
 :- func draw_card(deck, deck, supply, supply) = card.
 :- mode draw_card(in, out, mdi, muo) = out is semidet.
 :- mode draw_card(in, out, in, out)  = out is semidet.
@@ -42,7 +50,6 @@
 :- func det_draw_card(deck, deck, supply, supply) = card.
 :- mode det_draw_card(in, out, mdi, muo) = out is det.
 :- mode det_draw_card(in, out, in, out)  = out is det.
-
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -105,6 +112,36 @@ det_draw_card(!Deck, !Supply) = Card :-
         Card = Card0
     ;
         unexpected($file, $pred, "Cannot draw a card from an empty deck")
+    ).
+
+draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
+    draw_cards2(NumberOfCards, deck_empty, Drawn, !Deck, !Supply).
+
+det_draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
+    (
+        Drawn0 = draw_cards(NumberOfCards, !.Deck, !:Deck, !.Supply, !:Supply)
+    ->
+        Drawn = Drawn0
+    ;
+        unexpected($file, $pred, "Cannot draw cards from an empty deck")
+    ).
+
+:- pred draw_cards2(int, deck, deck, deck, deck, supply, supply).
+:- mode draw_cards2(in, in, out, in, out, in, out) is semidet.
+:- mode draw_cards2(in, in, out, in, out, mdi, muo) is semidet.
+
+draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
+    ( NumberOfCards > 0 ->
+        CardIndex = enum.to_int(
+            draw_card(!.Deck, !:Deck, !.Supply, !:Supply)),
+        draw_cards2(NumberOfCards - 1, !.Drawn, !:Drawn,
+            !.Deck, !:Deck, !.Supply, !:Supply),
+        deck(AlreadyDrawn) = !.Drawn,
+        !:Drawn = deck(AlreadyDrawn \/ (1 << CardIndex))
+    ; NumberOfCards < 0 ->
+        unexpected($file, $pred, "NumberOfCards must be positive")
+    ;
+        true
     ).
 
 %----------------------------------------------------------------------------%

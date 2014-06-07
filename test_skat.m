@@ -33,21 +33,28 @@
 :- import_module skat.suit.
 :- import_module skat.rank.
 :- import_module skat.card.
+:- import_module skat.game.
 
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
     random.init(231238, Supply),
+    real_main(!IO, Supply, _).
+
+:- pred real_main(io, io, random.supply, random.supply).
+:- mode real_main(di, uo, mdi, muo).
+
+real_main(!IO, !Supply) :-
     print_test("diamonds", diamonds, !IO),
     print_test("hearts",   hearts,   !IO),
     print_test("spades",   spades,   !IO),
     print_test("clubs",    clubs,    !IO),
-    print_test("ace of spades", ace `of` spades, !IO),
+    print_test("ace of spades",   ace   `of` spades, !IO),
     print_test("queen of hearts", queen `of` hearts, !IO),
-    print_test("all cards", deck_all, !IO),
-    print_test("no cards", deck_empty, !IO),
+    print_test("all cards", deck_all,   !IO),
+    print_test("no cards",  deck_empty, !IO),
     (
-        Drawn = draw_card(deck_all, AllMinusOne, Supply, _)
+        Drawn = draw_card(deck_all, AllMinusOne, !.Supply, !:Supply)
     ->
         print_test("drawn card", Drawn, !IO),
         print_test("left in deck", AllMinusOne, !IO),
@@ -58,7 +65,10 @@ main(!IO) :-
         )
     ;
         unexpected($file, $pred, "draw_card/4 should not have failed!")
-    ).
+    ),
+    print_test("game#init", game.init,  !IO),
+    deal(game.init, Dealt, !Supply),
+    print_test("game#dealt", Dealt, !IO).
 
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
