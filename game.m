@@ -15,9 +15,9 @@
 
 :- interface.
 
-:- import_module skat.deck.
-:- import_module list.
 :- import_module random.
+:- import_module skat.deck.
+:- import_module skat.player.
 
 %----------------------------------------------------------------------------%
 
@@ -25,10 +25,8 @@
 
 :- type phase
     ---> init(deck)
-    ;    dealt(
-            player_cards :: list(deck),
-            skat         :: deck
-         ).
+    ;    dealt(players, deck)
+    ;    before_bidding(players, deck).
 
 :- inst phase_init  --->  init(ground).
 :- inst phase_init_unique == unique(init(ground)).
@@ -54,6 +52,7 @@
 
 :- implementation.
 
+:- import_module list.
 :- import_module skat.card.
 
 %----------------------------------------------------------------------------%
@@ -64,10 +63,10 @@
 init = game(init(deck_all)).
 
 deal(game(init(!.Deck)), game(dealt(Players, Skat)), !Random) :-
-    P1 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
-    P2 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
-    P3 = det_draw_cards(10, !.Deck, Skat, !.Random, !:Random),
-    Players = [P1, P2, P3].
+    PC1 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
+    PC2 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
+    PC3 = det_draw_cards(10, !.Deck, Skat, !.Random, !:Random),
+    Players = [player(PC1, first), player(PC2, middle), player(PC3, last)].
 
 %----------------------------------------------------------------------------%
 :- end_module skat.game.
