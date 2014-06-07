@@ -42,14 +42,14 @@ main(!IO) :-
     print_test("hearts",   hearts,   !IO),
     print_test("spades",   spades,   !IO),
     print_test("clubs",    clubs,    !IO),
-    print_test("ace of spades", card(ace, spades), !IO),
-    print_test("queen of hearts", card(queen, hearts), !IO),
+    print_test("ace of spades", ace `of` spades, !IO),
+    print_test("queen of hearts", queen `of` hearts, !IO),
     print_test("all cards", deck_all, !IO),
     print_test("no cards", deck_empty, !IO),
     (
         Drawn = draw_card(deck_all, AllMinusOne, Supply, _)
     ->
-        print_test("drawn card", card(Drawn), !IO),
+        print_test("drawn card", Drawn, !IO),
         print_test("left in deck", AllMinusOne, !IO),
         ( contains_card(AllMinusOne, Drawn) ->
             unexpected($file, $pred, "the drawn card should not be a member")

@@ -16,32 +16,53 @@
 :- interface.
 
 :- import_module skat.deck.
+:- import_module list.
 
 %----------------------------------------------------------------------------%
 
 :- type game.
 
 :- type phase
-    ---> init(stack :: deck).
+    ---> init(deck)
+    ;    dealt(list(deck), skat).
 
+:- type skat.
+
+:- inst phase_init  --->  init(ground).
 :- inst phase_init_unique == unique(init(ground)).
+:- inst phase_dealt ---> dealt(ground, ground).
+:- inst phase_dealt_unique == unique(dealt(ground, ground)).
 
-:- mode game_init == out(unique(game(phase_init_unique))).
+:- mode game_init_in == in(unique(game(phase_init))).
+:- mode game_init_ui == in(unique(game(phase_init_unique))).
+:- mode game_init_uo == out(unique(game(phase_init_unique))).
+
+:- mode game_dealt_uo == out(unique(game(phase_dealt_unique))).
 
 :- func init = game.
-:- mode init = game_init is det.
+:- mode init = game_init_uo is det.
+
+:- pred deal(game, game).
+:- mode deal(game_init_in, game_dealt_uo) is det.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
+:- import_module pair.
+:- import_module skat.card.
+
 %----------------------------------------------------------------------------%
 
 :- type game
     ---> game(phase).
 
+:- type skat == pair(card, card).
+
 init = game(init(deck_all)).
+
+deal(game(init(_Deck)), game(dealt([], det_from_int(0)-det_from_int(1)))).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.game.

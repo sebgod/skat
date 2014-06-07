@@ -12,67 +12,92 @@
 
 :- interface.
 
+:- import_module enum.
 :- import_module skat.rank.
 :- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
-:- type card ---> card(rank, suit).
+:- type card.
 
-:- typeclass card(T) where [
-    func card(T) = card,
-    func index(T) = int is det
-].
+:- func (card ^ card_rank) = rank.
 
-:- func (T ^ card_rank) = rank <= card(T).
+:- func (card ^ card_suit) = suit.
 
-:- func (T ^ card_suit) = suit <= card(T).
+:- func of(rank, suit) = card.
 
-:- instance card(card).
-:- instance card(int).
+:- instance enum(card).
+
+:- func det_from_int(int) = card.
+
+:- func number_of_cards = int.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module char.
+:- use_module char.
 :- import_module coloured_pretty_printer.
 :- import_module int.
 :- import_module io.
 :- import_module list.
 :- import_module pretty_printer.
 :- import_module require.
-:- import_module std_util.
 :- import_module string.
 
 %----------------------------------------------------------------------------%
 %
-% card typeclass
+% The card type is a packed int consisting of the rank index and the
+% suit index.
 %
 
-(Card ^ card_rank) = Rank :- card(Rank, _Suit) = card(Card).
+:- type card
+    ---> card(int).
 
-(Card ^ card_suit) = Suit :- card(_Rank, Suit) = card(Card).
-
-:- instance card(card) where [
-    (card(Card) = Card),
-    (index(card(Rank, Suit)) = (suit_index(Suit) << 3) /\ rank_index(Rank))
+:- instance enum(card) where [
+    (to_int(card(Index)) = Index),
+    (func(from_int/1) is card_from_int)
 ].
 
-:- instance card(int) where [
-    (card(Index) =
-        ( suit_index(Suit) = (Index >> 3) /\ 0b11,
-          rank_index(Rank) =  Index       /\ 0b111
-        ->
-            card(Rank, Suit)
-        ;
-            unexpected($file, $pred,
-                format("card_index %x is invalid", [i(Index)]))
-        )
-    ),
-    func(index/1) is id
-].
+:- func card_from_int(int) = card.
+:- mode card_from_int(in) = out is semidet.
+
+card_from_int(Index) = card(Index) :-
+        Index >= 0,
+        Index < number_of_cards.
+
+det_from_int(Index) = Card :-
+    (
+        Card0 = card_from_int(Index)
+    ->
+        Card = Card0
+    ;
+        unexpected($file, $pred,
+            format("card_index %x is not in range [0..31]", [i(Index)]))
+    ).
+
+(card(Index) ^ card_rank) = Rank :-
+    (
+        rank_index(Rank0) =  Index /\ 0b111
+    ->
+        Rank = Rank0
+    ;
+        unexpected($file, $pred,
+            format("card_index %x is not a valid rank", [i(Index)]))
+    ).
+
+(card(Index) ^ card_suit) = Suit :-
+    (
+        suit_index(Suit0) = (Index >> 3) /\ 0b11
+    ->
+        Suit = Suit0
+    ;
+        unexpected($file, $pred,
+            format("card_index %x is not a valid suit", [i(Index)]))
+    ).
+
+of(Rank, Suit) = card((suit_index(Suit) << 3) \/ rank_index(Rank)).
 
 :- func rank_index(rank) = int.
 :- mode rank_index(in)   = out is det.
@@ -96,6 +121,8 @@ suit_index(spades)   = 1.
 suit_index(hearts)   = 2.
 suit_index(diamonds) = 3.
 
+number_of_cards = 32.
+
 %----------------------------------------------------------------------------%
 %
 % Pretty printing
@@ -103,9 +130,11 @@ suit_index(diamonds) = 3.
 
 :- func card_to_doc(card) = doc.
 
-card_to_doc(card(Rank, Suit)) = colour_on_black(Colour, CardDoc) :-
+card_to_doc(Card) = colour_on_black(Colour, CardDoc) :-
+    RankOffset = rank_offset(Card^card_rank),
+    Suit = Card^card_suit,
     Colour = ansi(Suit^suit_colour, normal),
-    CardChar = det_from_int(0x1f000 + rank_offset(Rank) + suit_offset(Suit)),
+    CardChar = char.det_from_int(0x1f000 + RankOffset + suit_offset(Suit)),
     CardDoc = str(char_to_string(CardChar) ++ "\u202f").
 
 :- func rank_offset(rank) = int.
