@@ -12,8 +12,8 @@
 
 :- interface.
 
-:- import_module random.
 :- import_module skat.card.
+:- import_module skat.prng.
 
 %----------------------------------------------------------------------------%
 
@@ -35,19 +35,19 @@
 :- mode member_card(in, in) is semidet.
 :- mode member_card(out, in) is nondet.
 
-:- func draw_cards(int, deck, deck, supply, supply) = deck.
+:- func draw_cards(int, deck, deck, prng, prng) = deck.
 :- mode draw_cards(in, in, out, mdi, muo) = out is semidet.
 :- mode draw_cards(in, in, out, in, out)  = out is semidet.
 
-:- func det_draw_cards(int, deck, deck, supply, supply) = deck.
+:- func det_draw_cards(int, deck, deck, prng, prng) = deck.
 :- mode det_draw_cards(in, in, out, mdi, muo) = out is det.
 :- mode det_draw_cards(in, in, out, in, out)  = out is det.
 
-:- func draw_card(deck, deck, supply, supply) = card.
+:- func draw_card(deck, deck, prng, prng) = card.
 :- mode draw_card(in, out, mdi, muo) = out is semidet.
 :- mode draw_card(in, out, in, out)  = out is semidet.
 
-:- func det_draw_card(deck, deck, supply, supply) = card.
+:- func det_draw_card(deck, deck, prng, prng) = card.
 :- mode det_draw_card(in, out, mdi, muo) = out is det.
 :- mode det_draw_card(in, out, in, out)  = out is det.
 
@@ -97,10 +97,10 @@ member_bit(Card, Index, Cards) :-
 draw_card(!Deck, !Supply) = Card :-
     !.Deck \= deck_empty,
     deck(Cards) = !.Deck,
-    random(0, number_of_cards, CardIndex, !Supply),
-    ( contains_card(!.Deck, det_from_int(CardIndex)) ->
-        !:Deck = deck(Cards `xor` (1 << CardIndex)),
-        Card = det_from_int(CardIndex)
+    next_card(RandCard, !Supply),
+    ( contains_card(!.Deck, RandCard) ->
+        !:Deck = deck(Cards `xor` (1 << enum.to_int(RandCard))),
+        Card = RandCard
     ;
         Card = draw_card(!.Deck, !:Deck, !.Supply, !:Supply)
     ).
@@ -126,7 +126,7 @@ det_draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
         unexpected($file, $pred, "Cannot draw cards from an empty deck")
     ).
 
-:- pred draw_cards2(int, deck, deck, deck, deck, supply, supply).
+:- pred draw_cards2(int, deck, deck, deck, deck, prng, prng).
 :- mode draw_cards2(in, in, out, in, out, in, out) is semidet.
 :- mode draw_cards2(in, in, out, in, out, mdi, muo) is semidet.
 

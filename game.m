@@ -15,9 +15,9 @@
 
 :- interface.
 
-:- import_module random.
 :- import_module skat.deck.
 :- import_module skat.player.
+:- import_module skat.prng.
 
 %----------------------------------------------------------------------------%
 
@@ -44,7 +44,7 @@
 :- func init = game.
 :- mode init = game_init_uo is det.
 
-:- pred deal(game, game, supply, supply).
+:- pred deal(game, game, prng, prng).
 :- mode deal(game_init_in, game_dealt_uo, mdi, muo) is det.
 
 %----------------------------------------------------------------------------%

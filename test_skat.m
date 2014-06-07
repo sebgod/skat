@@ -26,22 +26,21 @@
 :- import_module list.
 :- import_module pair.
 :- import_module pretty_printer.
-:- use_module random.
 :- import_module require.
 :- import_module skat.
-:- import_module skat.deck.
-:- import_module skat.suit.
-:- import_module skat.rank.
 :- import_module skat.card.
+:- import_module skat.deck.
+:- import_module skat.prng.
 :- import_module skat.game.
+:- import_module skat.rank.
+:- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
 main(!IO) :-
-    random.init(231238, Supply),
-    real_main(!IO, Supply, _).
+    real_main(!IO, init_determ, _).
 
-:- pred real_main(io, io, random.supply, random.supply).
+:- pred real_main(io, io, prng, prng).
 :- mode real_main(di, uo, mdi, muo).
 
 real_main(!IO, !Supply) :-
