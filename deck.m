@@ -32,7 +32,6 @@
 :- mode deck_empty = out is det.
 :- mode deck_empty = in  is semidet.
 
-
 :- pred contains_card(deck, card).
 :- mode contains_card(in, in) is semidet.
 
@@ -62,6 +61,10 @@
 
 :- func (deck ^ deck_suits) = suits.
 
+:- func (deck ^ deck_suit_values) = suits.
+
+:- func deck - deck = deck.
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
@@ -71,6 +74,7 @@
 :- import_module int.
 :- import_module io.
 :- import_module list.
+:- import_module pair.
 :- import_module pretty_printer.
 :- import_module univ.
 :- import_module require.
@@ -199,8 +203,37 @@ rank_offsets(Rank, C, S, H, D) :-
     H = to_offset(Rank `of` hearts),
     D = to_offset(Rank `of` diamonds).
 
-(Deck ^ deck_suits) = from_list(Suits) :-
-    Suits = list.map((func(Card) = Card^card_suit), cards_in_deck(Deck)).
+%----------------------------------------------------------------------------%
+%
+% Suit operators
+%
+
+(Deck ^ deck_suits) =
+    map_cards_by_suit(
+        (func(Card) = pair(Card^card_suit, 1)),
+        Deck - cards_by_rank(Deck, jack)).
+
+(Deck ^ deck_suit_values) =
+    map_cards_by_suit(
+        (func(Card) = pair(Card^card_suit, Card^card_rank^rank_value)),
+        Deck - cards_by_rank(Deck, jack)).
+
+:- type suit_mapper == (func(card) = suit_cardinality).
+:- inst suit_mapper_func == ((func(in) = out) is det).
+
+:- func map_cards_by_suit(suit_mapper, deck) = suits.
+:- mode map_cards_by_suit(in(suit_mapper_func), in) = out.
+
+map_cards_by_suit(SuitMapper, Deck) =
+    from_list(plus, list.map(SuitMapper, cards_in_deck(Deck))).
+
+%----------------------------------------------------------------------------%
+%
+% Set function operator overloads
+%
+
+deck(Minuend) - deck(Subtrahend) = deck(Difference) :-
+    Difference = Minuend /\  (\ Subtrahend).
 
 %----------------------------------------------------------------------------%
 %

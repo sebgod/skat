@@ -38,7 +38,6 @@
 :- import_module skat.card.
 :- import_module skat.rank.
 :- import_module skat.suit.
-:- import_module int.
 
 %----------------------------------------------------------------------------%
 
