@@ -63,6 +63,7 @@
 :- import_module map.
 :- import_module pretty_printer.
 :- import_module require.
+:- import_module string.
 
 %----------------------------------------------------------------------------%
 %
@@ -86,15 +87,16 @@ from_list(Evaluator, List) = suits(Map) :-
 from_list2(_Evaluator, [], !Map).
 from_list2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
     ( transform_value(
-        pred(Value::in, ValueN::out) is det :-
-            ValueN = Evaluator(Value, Cardinality),
+        (pred(Value::in, ValueN::out) is det :-
+            ValueN = Evaluator(Value, Cardinality)
+        ),
         Suit,
         !Map
       )
     ->
         true
     ;
-        det_insert(Suit, 1, !Map)
+        det_insert(Suit, Cardinality, !Map)
     ),
     from_list2(Evaluator, Suits, !Map).
 

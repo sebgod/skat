@@ -22,8 +22,9 @@
 
 :- type eval
     ---> eval(
-            jacks     :: int,
-            suits     :: suits
+            eval_jacks     :: int,
+            eval_suits     :: suits,
+            eval_values    :: suits
          ).
 
 :- type evals == list(eval).
@@ -42,7 +43,9 @@
 %----------------------------------------------------------------------------%
 
 evaluate_for_bidding(Cards) =
-    eval(straight_of(Cards, jack), Cards^deck_suits).
+    eval(straight_of(Cards, jack),
+         Cards^deck_suits,
+         Cards^deck_suit_values).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.eval.
