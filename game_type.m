@@ -14,15 +14,17 @@
 
 :- interface.
 
+:- import_module enum.
+:- import_module maybe.
 :- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
 :- type game_type
     ---> game_type(
-            game_base    :: base,
-            game_factor  :: factor,
-            game_grade   :: grade
+            game_base       :: base,
+            game_factor     :: maybe(int),
+            game_announced  :: announced_grade
          ).
 
 :- type base
@@ -30,33 +32,102 @@
     ;    grand
     ;    null.
 
-:- type factor
-    ---> tips(int)
-    ;    jacks(int)
-    ;    null.
+:- instance enum(base).
 
-:- type grade
+:- type announced_grade
     ---> playing
     ;    hand
-    ;    schneider_declared
-    ;    schneider_played
-    ;    schwarz_declared
-    ;    schwarz_played
+    ;    schneider
+    ;    schwarz
     ;    ouvert
     ;    null_hand_ouvert.
 
-% TODO: insert predicates & functions
+:- func (game_type ^ game_value) = int.
+
+:- func announced_grade_to_factor(announced_grade) = int.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
 :- implementation.
 
-% TODO: include/import/use modules
+:- import_module int.
+:- import_module require.
 
 %----------------------------------------------------------------------------%
 
-% TODO: implement predicates & functions
+%----------------------------------------------------------------------------%
+%
+% Base factor is an enum(T) instance
+%
+
+:- instance enum(base) where [
+    (to_int(Base) =
+        ( Base = grand ->
+            24
+        ; Base = null  ->
+            23
+        ; Base = colour(Suit) ->
+            Suit^suit_value
+        ;
+            unexpected($file, $pred, "Unknown basic game type")
+        )
+    ),
+    (from_int(Value) =
+        ( Value = 24 ->
+            grand
+        ; Value = 23 ->
+            null
+        ;
+            colour(from_int(Value))
+        )
+    )
+].
+
+
+GameType ^ game_value = Value :-
+    Base   = GameType^game_base,
+    Factor = GameType^game_factor,
+    Grade  = GameType^game_announced,
+    Value =
+    (
+        Factor = yes(Tips)
+    ->
+        to_int(Base) * (Tips + announced_grade_to_factor(Grade))
+    ;
+        Base = null,
+        Factor = no
+    ->
+        ( Grade = playing ->
+            23
+        ; Grade = hand ->
+            35
+        ; Grade = ouvert ->
+            46
+        ; Grade = null_hand_ouvert ->
+            59
+        ;
+            unexpected($file, $pred,
+                "valid null types: null, hand, overt, hand+overt")
+        )
+    ;
+        unexpected($file, $pred, "unknown game type")
+    ).
+
+announced_grade_to_factor(Grade) =
+    ( Grade = playing ->
+        1
+    ; Grade = hand ->
+        2
+    ; Grade = schneider ->
+        3
+    ; Grade = schwarz ->
+        4
+    ; Grade = ouvert ->
+        5
+    ;
+        unexpected($file, $pred, "null games have no factor")
+    ).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.game_type.
