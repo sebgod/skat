@@ -42,7 +42,6 @@ clean:
 	rm -f *.dylib
 	rm -f *.jar
 	rm -f *.beams
-	rm -f test_skat
 
 .PHONY: realclean
 realclean: clean
