@@ -14,16 +14,21 @@
 
 :- interface.
 
+:- import_module list.
 :- import_module skat.deck.
+:- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
 :- type eval
     ---> eval(
-            jacks     :: int
+            jacks     :: int,
+            suits     :: suits
          ).
 
-:- func evaluate(deck) = eval.
+:- type evals == list(eval).
+
+:- func evaluate_for_bidding(deck) = eval.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -37,7 +42,8 @@
 
 %----------------------------------------------------------------------------%
 
-evaluate(Cards) = eval(straight_of(Cards, jack)).
+evaluate_for_bidding(Cards) =
+    eval(straight_of(Cards, jack), Cards^deck_suits).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.eval.

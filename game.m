@@ -16,6 +16,7 @@
 :- interface.
 
 :- import_module skat.deck.
+:- import_module skat.eval.
 :- import_module skat.player.
 :- import_module skat.prng.
 
@@ -25,27 +26,26 @@
 
 :- type phase
     ---> init(deck)
-    ;    dealt(players, deck)
+    ;    dealt(players, evals, deck)
     ;    before_bidding(players, deck).
 
 :- inst phase_init  --->  init(ground).
 :- inst phase_init_unique == unique(init(ground)).
-:- inst phase_dealt ---> dealt(ground, ground).
-:- inst phase_dealt_unique == unique(dealt(ground, ground)).
 
-:- mode game_init_in == in(unique(game(phase_init))).
-:- mode game_init_ui == in(unique(game(phase_init_unique))).
+:- inst phase_dealt ---> dealt(ground, ground, ground).
+:- inst phase_dealt_unique == unique(dealt(ground, ground, ground)).
+
+:- mode game_init_ui == in(unique(game(phase_init))).
 :- mode game_init_uo == out(unique(game(phase_init_unique))).
 
-:- mode game_dealt_in == in(unique(game(phase_dealt))).
-:- mode game_dealt_ui == in(unique(game(phase_dealt_unique))).
+:- mode game_dealt_ui == in(unique(game(phase_dealt))).
 :- mode game_dealt_uo == out(unique(game(phase_dealt_unique))).
 
 :- func init = game.
 :- mode init = game_init_uo is det.
 
 :- pred deal(game, game, prng, prng).
-:- mode deal(game_init_in, game_dealt_uo, mdi, muo) is det.
+:- mode deal(game_init_ui, game_dealt_uo, mdi, muo) is det.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -62,11 +62,15 @@
 
 init = game(init(deck_all)).
 
-deal(game(init(!.Deck)), game(dealt(Players, Skat)), !Random) :-
+deal(game(init(!.Deck)), game(dealt(Players, Evals, Skat)), !Random) :-
     PC1 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
     PC2 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
     PC3 = det_draw_cards(10, !.Deck, Skat, !.Random, !:Random),
-    Players = [player(PC1, first), player(PC2, middle), player(PC3, last)].
+    Players = [player(PC1, first), player(PC2, middle), player(PC3, last)],
+    Evals = map(
+        (func(player(Cards, _)) = evaluate_for_bidding(Cards)),
+        Players
+    ).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.game.

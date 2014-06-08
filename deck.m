@@ -18,6 +18,7 @@
 :- import_module skat.card.
 :- import_module skat.prng.
 :- import_module skat.rank.
+:- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
@@ -59,6 +60,8 @@
 
 :- func straight_of(deck, rank) = int.
 
+:- func (deck ^ deck_suits) = suits.
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
@@ -71,7 +74,6 @@
 :- import_module pretty_printer.
 :- import_module univ.
 :- import_module require.
-:- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
@@ -196,6 +198,9 @@ rank_offsets(Rank, C, S, H, D) :-
     S = to_offset(Rank `of` spades),
     H = to_offset(Rank `of` hearts),
     D = to_offset(Rank `of` diamonds).
+
+(Deck ^ deck_suits) = from_list(Suits) :-
+    Suits = list.map((func(Card) = Card^card_suit), cards_in_deck(Deck)).
 
 %----------------------------------------------------------------------------%
 %
