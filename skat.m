@@ -18,6 +18,7 @@
 :- include_module skat.player.
 :- include_module skat.prng.
 :- include_module skat.game.
+:- include_module skat.game_type.
 :- include_module skat.rank.
 :- include_module skat.suit.
 
