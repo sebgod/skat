@@ -67,10 +67,7 @@ deal(game(init(!.Deck)), game(dealt(Players, Evals, Skat)), !Random) :-
     PC2 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
     PC3 = det_draw_cards(10, !.Deck, Skat, !.Random, !:Random),
     Players = [player(PC1, first), player(PC2, middle), player(PC3, last)],
-    Evals = map(
-        (func(player(Cards, _)) = evaluate_for_bidding(Cards)),
-        Players
-    ).
+    Evals = map(evaluate_for_bidding, Players).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.game.
