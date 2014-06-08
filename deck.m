@@ -5,7 +5,10 @@
 % Copyright © 2014 Sebastian Godelet
 % Main author: Sebastian Godelet <sebastian.godelet+github@gmail.com>
 % Created on: Tue Jun  3 14:21:05 CEST 2014
-%
+% Stability: low
+%----------------------------------------------------------------------------%
+% A deck of cards represents a set of cards either on hand or for dealing
+% and evulation of hands.
 %----------------------------------------------------------------------------%
 
 :- module skat.deck.
@@ -14,6 +17,7 @@
 
 :- import_module skat.card.
 :- import_module skat.prng.
+:- import_module skat.rank.
 
 %----------------------------------------------------------------------------%
 
@@ -51,6 +55,10 @@
 :- mode det_draw_card(in, out, mdi, muo) = out is det.
 :- mode det_draw_card(in, out, in, out)  = out is det.
 
+:- func cards_by_rank(deck, rank) = deck.
+
+:- func straight_of(deck, rank) = int.
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
@@ -63,6 +71,7 @@
 :- import_module pretty_printer.
 :- import_module univ.
 :- import_module require.
+:- import_module skat.suit.
 
 %----------------------------------------------------------------------------%
 
@@ -142,6 +151,51 @@ draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
     ;
         true
     ).
+
+cards_by_rank(deck(Cards), Rank) = deck(Rs) :-
+    rank_offsets(Rank, C, S, H, D),
+    Rs = Cards /\ (C \/ S \/ H \/ D).
+
+straight_of(Deck, Rank) = Straight :-
+    rank_offsets(Rank, C, S, H, D),
+    deck(Rs) = cards_by_rank(Deck, Rank),
+    Straight =
+    ( Rs /\ C = C ->
+        ( Rs /\  S =  S ->
+            ( Rs /\ H = H ->
+                ( Rs /\ D = D ->
+                    4
+                ;
+                    3
+                )
+            ;
+                2
+            )
+        ;
+            1
+        )
+    ; Rs /\ S  = 0  ->
+        ( Rs /\ H = 0 ->
+            ( Rs /\ D = 0 ->
+                -4
+            ;
+                -3
+            )
+        ;
+            -2
+        )
+    ;
+        -1
+    ).
+
+:- pred rank_offsets(rank, int, int, int, int).
+:- mode rank_offsets(in, out, out, out, out) is det.
+
+rank_offsets(Rank, C, S, H, D) :-
+    C = to_offset(Rank `of` clubs),
+    S = to_offset(Rank `of` spades),
+    H = to_offset(Rank `of` hearts),
+    D = to_offset(Rank `of` diamonds).
 
 %----------------------------------------------------------------------------%
 %

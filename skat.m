@@ -14,6 +14,7 @@
 
 :- include_module skat.card.
 :- include_module skat.deck.
+:- include_module skat.eval.
 :- include_module skat.player.
 :- include_module skat.prng.
 :- include_module skat.game.

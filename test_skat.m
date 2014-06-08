@@ -51,6 +51,9 @@ real_main(!IO, !Supply) :-
     print_test("ace of spades",   ace   `of` spades, !IO),
     print_test("queen of hearts", queen `of` hearts, !IO),
     print_test("all cards", deck_all,   !IO),
+    print_test("all jacks", cards_by_rank(deck_all, jack), !IO),
+    print_test("with all jacks", straight_of(deck_all, jack), !IO),
+    print_test("without all jacks", straight_of(deck_empty, jack), !IO),
     print_test("no cards",  deck_empty, !IO),
     (
         Drawn = draw_card(deck_all, AllMinusOne, !.Supply, !:Supply)
