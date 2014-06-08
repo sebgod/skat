@@ -42,8 +42,8 @@
     ;    schneider_played
     ;    schwarz_declared
     ;    schwarz_played
-    ;    overt
-    ;    null_hand_overt.
+    ;    ouvert
+    ;    null_hand_ouvert.
 
 % TODO: insert predicates & functions
 
