@@ -3,6 +3,9 @@ SUDO=sudo
 DIFF=diff -d --strip-trailing-cr
 MCFLAGS=--use-grade-subdirs -O3 -E
 MLLIBS=--ml mercury_misc
+TESTS=test_skat
+
+.PRECIOUS: $(TESTS)
 
 .PHONY: test
 test: skat.out
@@ -42,6 +45,7 @@ clean:
 	rm -f *.dylib
 	rm -f *.jar
 	rm -f *.beams
+	rm -f $(TESTS)
 
 .PHONY: realclean
 realclean: clean
