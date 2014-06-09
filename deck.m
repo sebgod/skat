@@ -87,6 +87,11 @@ deck_all = deck(0xffffffff).
 
 deck_empty = deck(0).
 
+%----------------------------------------------------------------------------%
+%
+% Test for member existance
+%
+
 contains_card(deck(Cards), Card) :-
     Cards \= 0,
     0 \= Cards /\ to_offset(Card).
@@ -107,6 +112,11 @@ member_bit(Card, Index, Cards) :-
     Cards \= 0,
     Cards /\ 1 = 0,
     member_bit(Card, Index + 1, Cards >> 1).
+
+%----------------------------------------------------------------------------%
+%
+% Card drawing functionality
+%
 
 draw_card(!Deck, !Supply) = Card :-
     !.Deck \= deck_empty,
@@ -158,6 +168,11 @@ draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
         true
     ).
 
+%----------------------------------------------------------------------------%
+%
+% Card sorting and filtering by rank and/or suit
+%
+
 cards_by_rank(deck(Cards), Rank) = deck(Rs) :-
     rank_offsets(Rank, C, S, H, D),
     Rs = Cards /\ (C \/ S \/ H \/ D).
@@ -202,11 +217,6 @@ rank_offsets(Rank, C, S, H, D) :-
     S = to_offset(Rank `of` spades),
     H = to_offset(Rank `of` hearts),
     D = to_offset(Rank `of` diamonds).
-
-%----------------------------------------------------------------------------%
-%
-% Suit operators
-%
 
 (Deck ^ deck_suits) =
     map_cards_by_suit(
