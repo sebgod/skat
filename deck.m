@@ -173,13 +173,21 @@ draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
 % Card sorting and filtering by rank and/or suit
 %
 
-cards_by_rank(deck(Cards), Rank) = deck(Rs) :-
-    rank_offsets(Rank, C, S, H, D),
-    Rs = Cards /\ (C \/ S \/ H \/ D).
+cards_by_rank(Deck, Rank) = cards_by_rank2(Deck, Rank, _C, _S, _H, _D).
+
+:- func cards_by_rank2(deck, rank, int, int, int, int) = deck.
+:- mode cards_by_rank2(in, in, out, out, out, out) = out is det.
+:- mode cards_by_rank2(in, in, in , in , in , in ) = out is semidet.
+
+cards_by_rank2(deck(Cards), Rank, C, S, H, D) = deck(CardsByRank) :-
+    C = to_offset(Rank `of` clubs),
+    S = to_offset(Rank `of` spades),
+    H = to_offset(Rank `of` hearts),
+    D = to_offset(Rank `of` diamonds),
+    CardsByRank = Cards /\ (C \/ S \/ H \/ D).
 
 straight_of(Deck, Rank) = Straight :-
-    rank_offsets(Rank, C, S, H, D),
-    deck(Rs) = cards_by_rank(Deck, Rank),
+    deck(Rs) = cards_by_rank2(Deck, Rank, C, S, H, D),
     Straight =
     ( Rs /\ C = C ->
         ( Rs /\  S =  S ->
@@ -208,15 +216,6 @@ straight_of(Deck, Rank) = Straight :-
     ;
         -1
     ).
-
-:- pred rank_offsets(rank, int, int, int, int).
-:- mode rank_offsets(in, out, out, out, out) is det.
-
-rank_offsets(Rank, C, S, H, D) :-
-    C = to_offset(Rank `of` clubs),
-    S = to_offset(Rank `of` spades),
-    H = to_offset(Rank `of` hearts),
-    D = to_offset(Rank `of` diamonds).
 
 (Deck ^ deck_suits) =
     map_cards_by_suit(
