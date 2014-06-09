@@ -89,7 +89,7 @@ deck_empty = deck(0).
 
 %----------------------------------------------------------------------------%
 %
-% Test for member existance
+% Test for member existence
 %
 
 contains_card(deck(Cards), Card) :-
