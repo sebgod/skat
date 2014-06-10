@@ -162,10 +162,10 @@ draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
             !.Deck, !:Deck, !.Supply, !:Supply),
         deck(AlreadyDrawn) = !.Drawn,
         !:Drawn = deck(AlreadyDrawn \/ CardOffset)
-    ; NumberOfCards < 0 ->
-        unexpected($file, $pred, "NumberOfCards must be positive")
-    ;
+    ; NumberOfCards = 0 ->
         true
+    ;
+        unexpected($file, $pred, "NumberOfCards must be positive")
     ).
 
 %----------------------------------------------------------------------------%
