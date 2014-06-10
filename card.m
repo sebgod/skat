@@ -139,7 +139,7 @@ card_to_doc(Card) = colour_on_black(Colour, CardDoc) :-
     Suit = Card^card_suit,
     Colour = ansi(Suit^suit_colour, normal),
     CardChar = char.det_from_int(0x1f000 + RankOffset + suit_offset(Suit)),
-    CardDoc = str(char_to_string(CardChar) ++ "\u202f").
+    CardDoc = str(char_to_string(CardChar) ++ " ").
 
 :- func rank_offset(rank) = int.
 
