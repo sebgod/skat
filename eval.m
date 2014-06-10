@@ -1,5 +1,5 @@
 %----------------------------------------------------------------------------%
-% vim: ft=mercury ff=unix ts=4 sw=4 et
+% vim: tw=78 ft=mercury ff=unix ts=4 sw=4 et
 %----------------------------------------------------------------------------%
 % File: eval.m
 % Copyright © 2014 Sebastian Godelet
@@ -28,9 +28,10 @@
 
 :- type stats
     ---> stats(
-            stats_jacks     :: int,
-            stats_suits     :: suits,
-            stats_values    :: suits
+            stats_jacks      :: int,
+            stats_suits      :: suits,
+            stats_values     :: suits,
+            stats_high_cards :: suits
          ).
 
 %:- type spec
@@ -53,10 +54,20 @@
 %----------------------------------------------------------------------------%
 
 evaluate_for_bidding(Player) = eval(Stats) :-
-    Cards = Player^player_cards,
-    Stats = stats(straight_of(Cards, jack),
-                   Cards^deck_suits,
-                   Cards^deck_suit_values).
+    Deck = Player^player_cards,
+    Jacks = Deck `straight_by_rank` jack,
+    Highs =
+    ( Jacks = 4 ->
+        deck_empty
+    ; Jacks = -4 ->
+        deck_empty
+    ;
+        cards_by_rank(Deck, jack)
+    ),
+    Stats = stats(Jacks,
+                  Deck^deck_suits,
+                  Deck^deck_suit_values,
+                  Highs^deck_suits).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.eval.

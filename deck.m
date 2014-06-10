@@ -57,7 +57,7 @@
 
 :- func cards_by_rank(deck, rank) = deck.
 
-:- func straight_of(deck, rank) = int.
+:- func straight_by_rank(deck, rank) = int.
 
 :- func (deck ^ deck_suits) = suits.
 
@@ -186,7 +186,7 @@ cards_by_rank2(deck(Cards), Rank, C, S, H, D) = deck(CardsByRank) :-
     D = to_offset(Rank `of` diamonds),
     CardsByRank = Cards /\ (C \/ S \/ H \/ D).
 
-straight_of(Deck, Rank) = Straight :-
+straight_by_rank(Deck, Rank) = Straight :-
     deck(Rs) = cards_by_rank2(Deck, Rank, C, S, H, D),
     Straight =
     ( Rs /\ C = C ->
@@ -220,12 +220,26 @@ straight_of(Deck, Rank) = Straight :-
 (Deck ^ deck_suits) =
     map_cards_by_suit(
         (func(Card) = pair(Card^card_suit, 1)),
-        Deck - cards_by_rank(Deck, jack)).
+        without_jacks(Deck)).
 
 (Deck ^ deck_suit_values) =
     map_cards_by_suit(
         (func(Card) = pair(Card^card_suit, Card^card_rank^rank_value)),
-        Deck - cards_by_rank(Deck, jack)).
+        without_jacks(Deck)).
+
+%high_cards(Deck) =
+%    map_cards_by_suit(
+%        (func(Card) = pair(Card^card_suit, 1)),
+%        without_jacks(Deck)).
+
+%----------------------------------------------------------------------------%
+%
+% Module private suits auxilary functions
+%
+
+:- func without_jacks(deck) = deck.
+
+without_jacks(Deck) = Deck - cards_by_rank(Deck, jack).
 
 :- type suit_mapper == (func(card) = suit_cardinality).
 :- inst suit_mapper_func == ((func(in) = out) is det).
@@ -246,7 +260,7 @@ deck(Minuend) - deck(Subtrahend) = deck(Difference) :-
 
 %----------------------------------------------------------------------------%
 %
-% Module private auxilary functions
+% Module private list auxilary functions
 %
 
 :- func valid_card_indices = list(int).
