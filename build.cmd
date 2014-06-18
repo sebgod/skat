@@ -1,3 +1,3 @@
 @pushd %~dp0
-@make MMC=$(MERCURY_HOME)/bin/mmc %*
+@make MMC=mercury %*
 @popd
