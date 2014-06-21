@@ -1,4 +1,3 @@
-@pushd %~dp0
 @setlocal enabledelayedexpansion
 @if defined MERCURY_HOME (
    call :SET_HOME MMC
@@ -11,6 +10,7 @@
 @exit /b 1
 
 :MAKE
+@pushd %~dp0
 @make MMC=%MMC% %*
 @set MAKE_RESULT=%ERRORLEVEL%
 @popd
@@ -22,4 +22,4 @@
 
 :FIND_IN_PATH
     @set RESULT=%~dp$PATH:1
-    @endlocal && ( set %2=%RESULT%mmc )
+    @endlocal && ( set %2=%RESULT%mmc ) && exit /b 0
