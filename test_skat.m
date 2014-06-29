@@ -23,6 +23,7 @@
 
 %----------------------------------------------------------------------------%
 
+:- import_module deconstruct.
 :- import_module list.
 :- import_module pair.
 :- import_module pretty_printer.
@@ -34,6 +35,9 @@
 :- import_module skat.game.
 :- import_module skat.rank.
 :- import_module skat.suit.
+:- import_module stream.string_writer.
+:- import_module string.
+:- import_module string.builder.
 
 %----------------------------------------------------------------------------%
 
@@ -76,10 +80,44 @@ real_main(!IO, !Supply) :-
 :- pred print_test(string::in, T::in, io::di, io::uo) is det.
 
 print_test(Name, Entity, !IO) :-
-    io.print(Name, !IO),
-    io.print(" = ", !IO),
-    write_doc(format(Entity), !IO),
-    io.nl(!IO).
+    State0 = string.builder.init,
+    stream.string_writer.format(string.builder.handle, "%s = ",
+        [s(Name)], State0, State1),
+
+    get_default_formatter_map(Formatter, !IO),
+    get_default_params(Params, !IO),
+    write_doc_to_stream(string.builder.handle, canonicalize,
+        Formatter, Params^pp_line_width, Params^pp_max_lines, Params^pp_limit,
+        format(Entity), State1, State2),
+
+    fprint(string.builder.to_string(State2), !IO),
+    fprint("\n", !IO).
+
+:- pred fprint(string::in, io::di, io::uo) is det.
+
+%----------------------------------------------------------------------------%
+%
+% fprint in C is just calling fprintf with stdout as the FILE*
+%
+
+:- pragma foreign_decl("C", "#include <stdio.h>").
+
+:- pragma foreign_proc("C", fprint(String::in, _IO0::di, _IO::uo),
+    [will_not_call_mercury, promise_pure],
+"
+    fprintf(stdout, ""%s"", String);
+").
+
+%----------------------------------------------------------------------------%
+%
+% fprint in C# is just calling System.Console.Write
+%
+
+:- pragma foreign_proc("C#", fprint(String::in, _IO0::di, _IO::uo),
+    [will_not_call_mercury, promise_pure],
+"
+    System.Console.Write(String);
+").
 
 %----------------------------------------------------------------------------%
 :- end_module test_skat.
