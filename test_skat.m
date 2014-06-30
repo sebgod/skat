@@ -41,30 +41,41 @@
 
 %----------------------------------------------------------------------------%
 
+:- type sb == string.builder.state.
+
 main(!IO) :-
-    real_main(!IO, init_determ, _).
+    real_main(!IO, init_determ, _, string.builder.init, SB),
+    fprint(to_string(SB), !IO).
 
-:- pred real_main(io, io, prng, prng).
-:- mode real_main(di, uo, mdi, muo).
+:- pred real_main(io::di, io::uo, prng::mdi, prng::muo, sb::di, sb::uo) is det.
 
-real_main(!IO, !Supply) :-
-    print_test("diamonds", diamonds, !IO),
-    print_test("hearts",   hearts,   !IO),
-    print_test("spades",   spades,   !IO),
-    print_test("clubs",    clubs,    !IO),
-    print_test("ace of spades",   ace   `of` spades, !IO),
-    print_test("queen of hearts", queen `of` hearts, !IO),
-    print_test("all cards", deck_all,   !IO),
-    print_test("all jacks", cards_by_rank(deck_all, jack), !IO),
-    print_test("all cards except jacks by suit", deck_all^deck_suits, !IO),
-    print_test("with all jacks", straight_by_rank(deck_all, jack), !IO),
-    print_test("without all jacks", straight_by_rank(deck_empty, jack), !IO),
-    print_test("no cards",  deck_empty, !IO),
+real_main(!IO, !Supply, !SB) :-
+    get_default_formatter_map(Formatter, !IO),
+    get_default_params(Params, !IO),
+    DocWriter = (pred(Doc::in, !.SB::di, !:SB::uo) is det :-
+        write_doc_to_stream(string.builder.handle, canonicalize,
+            Formatter,
+            Params^pp_line_width, Params^pp_max_lines, Params^pp_limit,
+            Doc, !SB)
+    ),
+    Test = print_test(DocWriter),
+    Test(format(diamonds), "diamonds", !SB),
+    Test(format(hearts),   "hearts",   !SB),
+    Test(format(spades),   "spades",   !SB),
+    Test(format(clubs),    "clubs",    !SB),
+    Test(format(ace `of` spades), "ace of spades", !SB),
+    Test(format(queen `of` hearts), "queen of hearts", !SB),
+    Test(format(deck_all), "all cards", !SB),
+    Test(format(cards_by_rank(deck_all, jack)), "all jacks", !SB),
+    Test(format(deck_all^deck_suits), "all cards except jack by suit", !SB),
+    Test(format(straight_by_rank(deck_all, jack)), "with all jacks", !SB),
+    Test(format(straight_by_rank(deck_empty, jack)), "without all jacks", !SB),
+    Test(format(deck_empty), "no cards",  !SB),
     (
         Drawn = draw_card(deck_all, AllMinusOne, !.Supply, !:Supply)
     ->
-        print_test("drawn card", Drawn, !IO),
-        print_test("left in deck", AllMinusOne, !IO),
+        Test(format(Drawn), "drawn card", !SB),
+        Test(format(AllMinusOne), "left in deck", !SB),
         ( contains_card(AllMinusOne, Drawn) ->
             unexpected($file, $pred, "the drawn card should not be a member")
         ;
@@ -73,25 +84,20 @@ real_main(!IO, !Supply) :-
     ;
         unexpected($file, $pred, "draw_card/4 should not have failed!")
     ),
-    print_test("game#init", game.init,  !IO),
+    Test(format(game.init), "game#init", !SB),
     deal(game.init, Dealt, !Supply),
-    print_test("game#dealt", Dealt, !IO).
+    Test(format(Dealt), "game#dealt", !SB).
 
-:- pred print_test(string::in, T::in, io::di, io::uo) is det.
+:- type doc_writer_pred == pred(doc, sb, sb).
+:- inst doc_writer_pred == (pred(in, di, uo) is det).
 
-print_test(Name, Entity, !IO) :-
-    State0 = string.builder.init,
-    stream.string_writer.format(string.builder.handle, "%s = ",
-        [s(Name)], State0, State1),
+:- pred print_test(doc_writer_pred::in(doc_writer_pred), doc::in, string::in,
+    sb::di, sb::uo) is det.
 
-    get_default_formatter_map(Formatter, !IO),
-    get_default_params(Params, !IO),
-    write_doc_to_stream(string.builder.handle, canonicalize,
-        Formatter, Params^pp_line_width, Params^pp_max_lines, Params^pp_limit,
-        format(Entity), State1, State2),
-
-    fprint(string.builder.to_string(State2), !IO),
-    fprint("\n", !IO).
+print_test(DocWriter, Doc, Name, !SB) :-
+    format(string.builder.handle, "%s = ", [s(Name)], !SB),
+    DocWriter(Doc, !SB),
+    format(string.builder.handle, "\n", [], !SB).
 
 :- pred fprint(string::in, io::di, io::uo) is det.
 

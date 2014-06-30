@@ -14,6 +14,8 @@
 
 :- interface.
 
+:- import_module pretty_printer.
+
 %----------------------------------------------------------------------------%
 
 :- type rank
@@ -31,7 +33,12 @@
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
+:- func rank_to_doc(rank) = doc.
+
 :- implementation.
+
+:- import_module char.
+:- import_module string.
 
 %----------------------------------------------------------------------------%
 
@@ -49,6 +56,22 @@ rank_value(queen, 3).
 rank_value(nine,  0).
 rank_value(eight, 0).
 rank_value(seven, 0).
+
+rank_to_doc(Rank) = str(from_char(Symbol)) :-
+    rank_symbol(Rank, Symbol).
+
+:- pred rank_symbol(rank, char).
+:- mode rank_symbol(in, out) is det.
+:- mode rank_symbol(out, in) is semidet.
+
+rank_symbol(jack,  'J').
+rank_symbol(ace,   'A').
+rank_symbol(ten,   'T').
+rank_symbol(king,  'K').
+rank_symbol(queen, 'Q').
+rank_symbol(nine,  '9').
+rank_symbol(eight, '8').
+rank_symbol(seven, '7').
 
 %----------------------------------------------------------------------------%
 :- end_module skat.rank.

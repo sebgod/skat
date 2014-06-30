@@ -44,6 +44,7 @@
 :- import_module int.
 :- import_module io.
 :- import_module list.
+:- import_module maybe.
 :- import_module pretty_printer.
 :- import_module require.
 :- import_module string.
@@ -134,7 +135,12 @@ number_of_cards = 32.
 
 :- func card_to_doc(card) = doc.
 
-card_to_doc(Card) = colour_on_black(Colour, CardDoc) :-
+card_to_doc(Card) =
+    docs([rank_to_doc(Card^card_rank), suit_to_doc(Card^card_suit)]).
+
+:- func card_to_doc_unicode_coloured(card) = doc.
+
+card_to_doc_unicode_coloured(Card) = colour_on_black(Colour, CardDoc) :-
     RankOffset = rank_offset(Card^card_rank),
     Suit = Card^card_suit,
     Colour = ansi(Suit^suit_colour, normal),
@@ -164,11 +170,14 @@ suit_offset(clubs)    = 0xd0.
 :- pred init(io::di, io::uo) is det.
 
 init(!IO) :-
-    update_formatters(
-        [
-            fmt($module, "card", 0, fmt_any(card_to_doc))
-        ], !IO).
-
+    io.get_environment_var("SKAT_FORMAT_OP", FormatOp, !IO),
+    CardToDoc =
+    ( FormatOp = yes("unicol") ->
+        card_to_doc_unicode_coloured
+    ;
+        card_to_doc
+    ),
+    update_formatters([fmt($module, "card", 0, fmt_any(CardToDoc))], !IO).
 %----------------------------------------------------------------------------%
 :- end_module skat.card.
 %----------------------------------------------------------------------------%

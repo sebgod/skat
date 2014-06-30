@@ -18,6 +18,7 @@
 :- import_module enum.
 :- import_module list.
 :- import_module pair.
+:- import_module pretty_printer.
 
 %----------------------------------------------------------------------------%
 
@@ -53,6 +54,8 @@
 :- func from_list(evaluator, list(suit_cardinality)) = suits.
 :- mode from_list(in(evaluator_func), in) = out is det.
 
+:- func suit_to_doc(suit) = doc.
+
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
 
@@ -61,7 +64,6 @@
 :- import_module int.
 :- import_module io.
 :- import_module map.
-:- import_module pretty_printer.
 :- import_module require.
 :- import_module string.
 
@@ -138,8 +140,6 @@ suit_colour(diamonds, yellow).
 suit_colour(hearts,   red).
 suit_colour(spades,   green).
 suit_colour(clubs,    black).
-
-:- func suit_to_doc(suit) = doc.
 
 suit_to_doc(Suit) =
     colour_on_black(ansi(Suit^suit_colour, normal), str(Suit^suit_symbol)).
