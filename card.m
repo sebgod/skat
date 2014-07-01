@@ -136,7 +136,7 @@ number_of_cards = 32.
 :- func card_to_doc(card) = doc.
 
 card_to_doc(Card) =
-    docs([suit_to_doc(Card^card_suit), rank_to_doc(Card^card_rank)]).
+    docs([format(Card^card_suit), format(Card^card_rank)]).
 
 :- func card_to_doc_unicode_coloured(card) = doc.
 

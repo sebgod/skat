@@ -38,6 +38,9 @@
 :- implementation.
 
 :- import_module char.
+:- import_module coloured_pretty_printer.
+:- import_module io.
+:- import_module list.
 :- import_module string.
 
 %----------------------------------------------------------------------------%
@@ -72,6 +75,16 @@ rank_symbol(queen, 'Q').
 rank_symbol(nine,  '9').
 rank_symbol(eight, '8').
 rank_symbol(seven, '7').
+
+:- initialise init/2.
+
+:- pred init(io::di, io::uo) is det.
+
+init(!IO) :-
+    update_formatters(
+        [
+            fmt($module, "rank", 0, fmt_any(rank_to_doc))
+        ], !IO).
 
 %----------------------------------------------------------------------------%
 :- end_module skat.rank.
