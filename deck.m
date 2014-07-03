@@ -59,9 +59,9 @@
 
 :- func straight_by_rank(deck, rank) = int.
 
-:- func (deck ^ deck_suits) = suits.
+:- func (deck ^ deck_suits) = suit_cardinalities.
 
-:- func (deck ^ deck_suit_values) = suits.
+:- func (deck ^ deck_suit_values) = suit_cardinalities.
 
 :- func deck - deck = deck.
 
@@ -244,8 +244,8 @@ without_jacks(Deck) = Deck - cards_by_rank(Deck, jack).
 :- type suit_mapper == (func(card) = suit_cardinality).
 :- inst suit_mapper_func == ((func(in) = out) is det).
 
-:- func map_cards_by_suit(suit_mapper, deck) = suits.
-:- mode map_cards_by_suit(in(suit_mapper_func), in) = out.
+:- func map_cards_by_suit(suit_mapper::in(suit_mapper_func), deck::in) =
+    (suit_cardinalities::out) is det.
 
 map_cards_by_suit(SuitMapper, Deck) =
     from_list(plus, list.map(SuitMapper, cards_in_deck(Deck))).

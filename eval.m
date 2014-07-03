@@ -29,9 +29,9 @@
 :- type stats
     ---> stats(
             stats_jacks      :: int,
-            stats_suits      :: suits,
-            stats_values     :: suits,
-            stats_high_cards :: suits
+            stats_suits      :: suit_cardinalities,
+            stats_values     :: suit_cardinalities,
+            stats_high_cards :: suit_cardinalities
          ).
 
 %:- type spec

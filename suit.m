@@ -30,7 +30,7 @@
 
 :- instance enum(suit).
 
-:- type suits.
+:- type suit_cardinalities.
 
 :- func (suit ^ suit_symbol) = string.
 
@@ -51,7 +51,7 @@
 
 :- type suit_cardinality == pair(suit, int).
 
-:- func from_list(evaluator, list(suit_cardinality)) = suits.
+:- func from_list(evaluator, list(suit_cardinality)) = suit_cardinalities.
 :- mode from_list(in(evaluator_func), in) = out is det.
 
 :- func suit_to_doc(suit) = doc.
@@ -77,17 +77,17 @@
     (to_int(Suit)    = Suit ^ suit_value)
 ].
 
-:- type card_map == map(suit, int).
-:- type suits ---> suits(card_map).
+:- type suit_cardinality_map == map(suit, int).
+:- type suit_cardinalities ---> suits(suit_cardinality_map).
 
 from_list(Evaluator, List) = suits(Map) :-
-    from_list2(Evaluator, List, init, Map).
+    from_list_2(Evaluator, List, init, Map).
 
-:- pred from_list2(evaluator, list(suit_cardinality), card_map, card_map).
-:- mode from_list2(in(evaluator_func), in, in, out) is det.
+:- pred from_list_2(evaluator::in(evaluator_func), list(suit_cardinality)::in,
+    suit_cardinality_map::in, suit_cardinality_map::out) is det.
 
-from_list2(_Evaluator, [], !Map).
-from_list2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
+from_list_2(_Evaluator, [], !Map).
+from_list_2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
     ( transform_value(
         (pred(Value::in, ValueN::out) is det :-
             ValueN = Evaluator(Value, Cardinality)
@@ -100,7 +100,7 @@ from_list2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
     ;
         det_insert(Suit, Cardinality, !Map)
     ),
-    from_list2(Evaluator, Suits, !Map).
+    from_list_2(Evaluator, Suits, !Map).
 
 Suit ^ suit_value = Value :- suit_value(Suit, Value).
 
@@ -144,9 +144,9 @@ suit_colour(clubs,    black).
 suit_to_doc(Suit) =
     colour_on_black(ansi(Suit^suit_colour, normal), str(Suit^suit_symbol)).
 
-:- func suits_to_doc(suits) = doc.
+:- func suit_cardinalities_to_doc(suit_cardinalities) = doc.
 
-suits_to_doc(suits(Map)) =
+suit_cardinalities_to_doc(suits(Map)) =
     group(map(suit_cardinality_to_doc, to_assoc_list(Map))).
 
 :- func suit_cardinality_to_doc(suit_cardinality) = doc.
@@ -161,7 +161,8 @@ init(!IO) :-
     update_formatters(
         [
             fmt($module, "suit", 0, fmt_any(suit_to_doc)),
-            fmt($module, "suits", 0, fmt_any(suits_to_doc))
+            fmt($module, "suit_cardinalities", 0,
+                fmt_any(suit_cardinalities_to_doc))
         ], !IO).
 
 %----------------------------------------------------------------------------%
