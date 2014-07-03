@@ -4,6 +4,9 @@ DIFF=diff -d --strip-trailing-cr
 MCFLAGS=--use-grade-subdirs -O3 -E
 MLLIBS=--ml mercury_misc
 TESTS=test_skat
+ifdef GRADE
+MCFLAGS+=-s $(GRADE) --no-detect-libgrades
+endif
 
 .PRECIOUS: $(TESTS)
 
