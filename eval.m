@@ -61,6 +61,7 @@
 
 all_suits = list_to_set([diamonds, hearts, spades, clubs]).
 
+    % TODO: Lacks implementation
 evaluate_for_bidding(Player) = eval(Stats) :-
     Deck = Player^player_cards,
     Jacks = Deck `straight_by_rank` jack,
@@ -70,8 +71,7 @@ evaluate_for_bidding(Player) = eval(Stats) :-
     ; Jacks = -4 ->
         Highs = deck_empty
     ;
-        % cards_by_rank(Deck, jack)
-        unexpected($file, $pred, "not yet implemented, Jacks != 4")
+        Highs = deck_empty
     ),
     Stats = stats(Jacks,
                   Deck^deck_suit_cardinalities,
