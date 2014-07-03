@@ -74,9 +74,9 @@ evaluate_for_bidding(Player) = eval(Stats) :-
         unexpected($file, $pred, "not yet implemented, Jacks != 4")
     ),
     Stats = stats(Jacks,
-                  Deck^deck_suits,
+                  Deck^deck_suit_cardinalities,
                   Deck^deck_suit_values,
-                  Highs^deck_suits).
+                  Highs^deck_suit_cardinalities).
 
 :- pred count_succ(deck::in, rank::in, deck::in, deck::out,
     suit_set::in, suit_set::out) is det.

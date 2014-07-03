@@ -28,7 +28,7 @@
     ;    eight
     ;    seven.
 
-:- func (rank ^ rank_value) = int.
+:- func rank_value(rank) = int.
 
 %----------------------------------------------------------------------------%
 %----------------------------------------------------------------------------%
@@ -45,7 +45,7 @@
 
 %----------------------------------------------------------------------------%
 
-Rank ^ rank_value = Value :- rank_value(Rank, Value).
+rank_value(Rank) = Value :- rank_value(Rank, Value).
 
 :- pred rank_value(rank, int).
 :- mode rank_value(in, out) is det.

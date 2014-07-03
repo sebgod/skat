@@ -7,7 +7,13 @@
 % Created on: Sun  1 Jun 10:34:53 CEST 2014
 % Stability: low
 %----------------------------------------------------------------------------%
-% TODO: Module documentation
+% A suit is an enumeration of the four Skat suits,
+% namely
+%  * diamonds (♦)
+%  * hearts   (♥)
+%  * spades   (♠)
+%  * clubs    (♣)
+
 %----------------------------------------------------------------------------%
 
 :- module skat.suit.
@@ -32,11 +38,11 @@
 
 :- type suit_cardinalities.
 
-:- func (suit ^ suit_symbol) = string.
+:- func suit_symbol(suit) = string.
 
-:- func (suit ^ suit_colour) = ansi_colour.
+:- func suit_colour(suit) = ansi_colour.
 
-:- func (suit ^ suit_value) = int.
+:- func suit_value(suit) = int.
 
 %----------------------------------------------------------------------------%
 %
@@ -90,11 +96,8 @@ from_list_2(_Evaluator, [], !Map).
 from_list_2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
     ( transform_value(
         (pred(Value::in, ValueN::out) is det :-
-            ValueN = Evaluator(Value, Cardinality)
-        ),
-        Suit,
-        !Map
-      )
+            ValueN = Evaluator(Value, Cardinality)),
+        Suit, !Map)
     ->
         true
     ;
@@ -102,7 +105,7 @@ from_list_2(Evaluator, [Suit-Cardinality | Suits], !Map) :-
     ),
     from_list_2(Evaluator, Suits, !Map).
 
-Suit ^ suit_value = Value :- suit_value(Suit, Value).
+suit_value(Suit) = Value :- suit_value(Suit, Value).
 
 :- pred suit_value(suit, int).
 :- mode suit_value(in, out) is det.
@@ -118,7 +121,7 @@ suit_value(clubs,    12).
 % Pretty printing
 %
 
-Suit ^ suit_symbol = Symbol :- suit_symbol(Suit, Symbol).
+suit_symbol(Suit) = Symbol :- suit_symbol(Suit, Symbol).
 
 :- pred suit_symbol(suit, string).
 :- mode suit_symbol(in, out) is det.
@@ -130,7 +133,7 @@ suit_symbol(spades,   "♠").
 suit_symbol(clubs,    "♣").
 
 
-Suit ^ suit_colour = Colour :- suit_colour(Suit, Colour).
+suit_colour(Suit) = Colour :- suit_colour(Suit, Colour).
 
 :- pred suit_colour(suit, ansi_colour).
 :- mode suit_colour(in, out) is det.
@@ -144,6 +147,8 @@ suit_colour(clubs,    black).
 suit_to_doc(Suit) =
     colour_on_black(ansi(Suit^suit_colour, normal), str(Suit^suit_symbol)).
 
+%----------------------------------------------------------------------------%
+
 :- func suit_cardinalities_to_doc(suit_cardinalities) = doc.
 
 suit_cardinalities_to_doc(suits(Map)) =
@@ -152,6 +157,8 @@ suit_cardinalities_to_doc(suits(Map)) =
 :- func suit_cardinality_to_doc(suit_cardinality) = doc.
 
 suit_cardinality_to_doc(Suit-Count) = group([format(Count), format(Suit)]).
+
+%----------------------------------------------------------------------------%
 
 :- initialise init/2.
 

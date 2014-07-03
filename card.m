@@ -20,9 +20,9 @@
 
 :- type card.
 
-:- func (card ^ card_rank) = rank.
+:- func card_rank(card) = rank.
 
-:- func (card ^ card_suit) = suit.
+:- func card_suit(card) = suit.
 
 :- func of(rank, suit) = card.
 
@@ -82,7 +82,7 @@ det_from_int(Index) = Card :-
 
 to_offset(Card) = 1 << to_int(Card).
 
-(card(Index) ^ card_rank) = Rank :-
+card_rank(card(Index)) = Rank :-
     (
         rank_index(Rank0) =  Index /\ 0b111
     ->
@@ -92,7 +92,7 @@ to_offset(Card) = 1 << to_int(Card).
             format("card_index %x is not a valid rank", [i(Index)]))
     ).
 
-(card(Index) ^ card_suit) = Suit :-
+card_suit(card(Index)) = Suit :-
     (
         suit_index(Suit0) = (Index >> 3) /\ 0b11
     ->
@@ -149,10 +149,10 @@ card_to_doc_unicode_coloured(Card) = colour_on_black(Colour, CardDoc) :-
 
 :- func rank_offset(rank) = int.
 
-rank_offset(ace)   = 1.
-rank_offset(seven) = 7.
-rank_offset(eight) = 8.
-rank_offset(nine)  = 9.
+rank_offset(ace)   = 0x1.
+rank_offset(seven) = 0x7.
+rank_offset(eight) = 0x8.
+rank_offset(nine)  = 0x9.
 rank_offset(ten)   = 0xa.
 rank_offset(jack)  = 0xb.
 rank_offset(queen) = 0xd.

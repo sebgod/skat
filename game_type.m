@@ -42,7 +42,7 @@
     ;    ouvert
     ;    null_hand_ouvert.
 
-:- func (game_type ^ game_value) = int.
+:- func game_value(game_type) = int.
 
 :- func announced_grade_to_factor(announced_grade) = int.
 
@@ -85,7 +85,7 @@
 ].
 
 
-GameType ^ game_value = Value :-
+game_value(GameType) = Value :-
     Base   = GameType^game_base,
     Factor = GameType^game_factor,
     Grade  = GameType^game_announced,

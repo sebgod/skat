@@ -59,9 +59,9 @@
 
 :- func straight_by_rank(deck, rank) = int.
 
-:- func (deck ^ deck_suits) = suit_cardinalities.
+:- func deck_suit_cardinalities(deck) = suit_cardinalities.
 
-:- func (deck ^ deck_suit_values) = suit_cardinalities.
+:- func deck_suit_values(deck) = suit_cardinalities.
 
 :- func deck - deck = deck.
 
@@ -217,20 +217,15 @@ straight_by_rank(Deck, Rank) = Straight :-
         -1
     ).
 
-(Deck ^ deck_suits) =
+deck_suit_cardinalities(Deck) =
     map_cards_by_suit(
         (func(Card) = pair(Card^card_suit, 1)),
         without_jacks(Deck)).
 
-(Deck ^ deck_suit_values) =
+deck_suit_values(Deck) =
     map_cards_by_suit(
         (func(Card) = pair(Card^card_suit, Card^card_rank^rank_value)),
         without_jacks(Deck)).
-
-%high_cards(Deck) =
-%    map_cards_by_suit(
-%        (func(Card) = pair(Card^card_suit, 1)),
-%        without_jacks(Deck)).
 
 %----------------------------------------------------------------------------%
 %
