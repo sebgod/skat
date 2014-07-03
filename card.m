@@ -53,6 +53,9 @@
 %
 % The card type is a packed int consisting of the rank index and the
 % suit index.
+% XXX Since Mercury guarantees that sizeof(int) >= 4, this aproach works well
+% enough, but is unfortuantely not generic enough for games like Poker.
+% This could be handled by the access functions though
 %
 
 :- type card
@@ -84,7 +87,7 @@ to_offset(Card) = 1 << to_int(Card).
 
 card_rank(card(Index)) = Rank :-
     (
-        rank_index(Rank0) =  Index /\ 0b111
+        Rank0^rank_index =  Index /\ 0b111
     ->
         Rank = Rank0
     ;
@@ -94,7 +97,7 @@ card_rank(card(Index)) = Rank :-
 
 card_suit(card(Index)) = Suit :-
     (
-        suit_index(Suit0) = (Index >> 3) /\ 0b11
+        Suit0^suit_index = (Index >> 3) /\ 0b11
     ->
         Suit = Suit0
     ;
@@ -102,7 +105,7 @@ card_suit(card(Index)) = Suit :-
             format("card_index %x is not a valid suit", [i(Index)]))
     ).
 
-of(Rank, Suit) = card((suit_index(Suit) << 3) \/ rank_index(Rank)).
+of(Rank, Suit) = card((Suit^suit_index << 3) \/ Rank^rank_index).
 
 :- func rank_index(rank) = int.
 :- mode rank_index(in)   = out is det.
@@ -144,7 +147,7 @@ card_to_doc_unicode_coloured(Card) = colour_on_black(Colour, CardDoc) :-
     RankOffset = rank_offset(Card^card_rank),
     Suit = Card^card_suit,
     Colour = ansi(Suit^suit_colour, normal),
-    CardChar = char.det_from_int(0x1f000 + RankOffset + suit_offset(Suit)),
+    CardChar = char.det_from_int(0x1f000 + RankOffset + Suit^suit_offset),
     CardDoc = str(char_to_string(CardChar) ++ " ").
 
 :- func rank_offset(rank) = int.
