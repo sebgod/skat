@@ -62,7 +62,7 @@
 %
 
 :- instance enum(base) where [
-    (to_int(Base) =
+    ( to_int(Base) =
         ( Base = grand ->
             24
         ; Base = null  ->
@@ -73,7 +73,7 @@
             unexpected($file, $pred, "Unknown basic game type")
         )
     ),
-    (from_int(Value) =
+    ( from_int(Value) =
         ( Value = 24 ->
             grand
         ; Value = 23 ->
@@ -90,8 +90,7 @@ GameType ^ game_value = Value :-
     Factor = GameType^game_factor,
     Grade  = GameType^game_announced,
     Value =
-    (
-        Factor = yes(Tips)
+    ( Factor = yes(Tips)
     ->
         to_int(Base) * (Tips + announced_grade_to_factor(Grade))
     ;
