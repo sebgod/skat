@@ -105,25 +105,32 @@ print_test(DocWriter, Doc, Name, !SB) :-
 %----------------------------------------------------------------------------%
 %
 % fprint in C is just calling fprintf with stdout as the FILE*
+% fprint in C# is just calling System.Console.Write
+% fprint in Java is just calling System.out.print
 %
 
 :- pragma foreign_decl("C", "#include <stdio.h>").
 
-:- pragma foreign_proc("C", fprint(String::in, _IO0::di, _IO::uo),
+:- pragma foreign_proc("C", fprint(Text::in, _IO0::di, _IO::uo),
     [will_not_call_mercury, promise_pure],
 "
-    fprintf(stdout, ""%s"", String);
+    fprintf(stdout, ""%s"", Text);
 ").
 
 %----------------------------------------------------------------------------%
-%
-% fprint in C# is just calling System.Console.Write
-%
 
-:- pragma foreign_proc("C#", fprint(String::in, _IO0::di, _IO::uo),
+:- pragma foreign_proc("C#", fprint(Text::in, _IO0::di, _IO::uo),
     [will_not_call_mercury, promise_pure],
 "
-    System.Console.Write(String);
+    System.Console.Write(Text);
+").
+
+%----------------------------------------------------------------------------%
+
+:- pragma foreign_proc("Java", fprint(Text::in, _IO::di, _IO::uo),
+    [will_not_call_mercury, promise_pure],
+"
+    System.out.print(Text);
 ").
 
 %----------------------------------------------------------------------------%

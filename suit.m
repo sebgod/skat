@@ -7,8 +7,7 @@
 % Created on: Sun  1 Jun 10:34:53 CEST 2014
 % Stability: low
 %----------------------------------------------------------------------------%
-% A suit is an enumeration of the four Skat suits,
-% namely
+% A suit is an enumeration of the four Skat suits, namely
 %  * diamonds (♦)
 %  * hearts   (♥)
 %  * spades   (♠)
