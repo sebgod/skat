@@ -127,7 +127,7 @@ print_test(DocWriter, Doc, Name, !SB) :-
 
 %----------------------------------------------------------------------------%
 
-:- pragma foreign_proc("Java", fprint(Text::in, _IO::di, _IO::uo),
+:- pragma foreign_proc("Java", fprint(Text::in, _IO0::di, _IO::uo),
     [will_not_call_mercury, promise_pure],
 "
     System.out.print(Text);
