@@ -21,14 +21,11 @@
 @exit /b 1
 
 :MAKE
-@pushd %~dp0
-make MMC=%MMC% MERCURY_HOME=%MERCURY_HOME% %*
-@set MAKE_RESULT=%ERRORLEVEL%
-@popd
-
-:: Restoring the previous codepage
-@if %oldCP% NEQ %newCP% chcp %oldCP% 1>nul
-@exit /b %MAKE_RESULT%
+    make MMC=%MMC% MERCURY_HOME=%MERCURY_HOME% %*
+    @set MAKE_RESULT=%ERRORLEVEL%
+    @rem ember the previous codepage (very important for Windows XP)
+    @if %oldCP% NEQ %newCP% chcp %oldCP% 1>nul
+    @exit /b %MAKE_RESULT%
 
 :SET_HOME
     @setlocal enabledelayedexpansion
