@@ -1,5 +1,4 @@
 Mercury/
-test_skat
 .*.swp
 tags
 *.mh
@@ -13,3 +12,4 @@ tags
 *.beams
 *.jar
 *.out
+*.res

@@ -28,7 +28,7 @@ exps: skat.exp
 	@test -r $<.bat && ( exec $$COMSPEC /c $<.bat >$@ ) || ( ./$< >$@ )
 	@rm -f $<.bat
 	@printf "Testing $*: "
-	@( $(DIFF) $*.exp $@ && echo success ) || ( rm $@ && echo failed )
+	@( $(DIFF) $*.exp 1>$*.res $@ && echo success ) || ( rm $@ && echo failed )
 
 .PHONY: libskat
 libskat:
