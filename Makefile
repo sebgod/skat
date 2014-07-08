@@ -1,10 +1,10 @@
-MMC=mmc
-SUDO=sudo
-DIFF=diff -d --strip-trailing-cr
-MCFLAGS=--use-grade-subdirs -O3 -E
-MLLIBS=--ml mercury_misc
-CLASSPATH=--java-classpath $(MERCURY_HOME)/lib/mercury/lib/java/mercury_misc.jar
-TESTS=test_skat
+MMC  :=mmc
+SUDO :=sudo
+DIFF :=diff -d --strip-trailing-cr
+MCFLAGS :=--use-grade-subdirs -O3 -E
+MLLIBS  :=--ml mercury_misc
+CLASSPATH :=--java-classpath $(MERCURY_HOME)/lib/mercury/lib/java/mercury_misc.jar
+TESTS:=test_skat
 ifdef GRADE
     MCFLAGS += -s $(GRADE) --no-detect-libgrades
 endif
