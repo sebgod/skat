@@ -1,0 +1,5 @@
+PROJ_CNAME:=skat
+PROJ_LIBNAME:=lib$(PROJ_CNAME)
+MLLIBS:=--ml mercury_misc
+JAR_DIR:=$(MERCURY_HOME)/lib/mercury/lib/java
+CLASSPATH:=--java-classpath $(JAR_DIR)/mercury_misc.jar

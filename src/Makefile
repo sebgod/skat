@@ -1,13 +1,9 @@
-MMC  :=mmc
+include ../Make.options
+include ../Project.options
+
 SUDO :=sudo
 DIFF :=diff -d --strip-trailing-cr
-MCFLAGS :=--use-grade-subdirs -O3 -E
-MLLIBS  :=--ml mercury_misc
-CLASSPATH :=--java-classpath $(MERCURY_HOME)/lib/mercury/lib/java/mercury_misc.jar
 TESTS:=test_skat
-ifdef GRADE
-    MCFLAGS += -s $(GRADE) --no-detect-libgrades
-endif
 # this is a work-around for using make on MinGW32 when building with grade=java,
 # as it creates the bash shell script instead of the Windows batch file
 ifeq ($(OS),Windows_NT)
@@ -30,15 +26,15 @@ exps: skat.exp
 	@printf "Testing $*: "
 	@( $(DIFF) $*.exp 1>$*.res $@ && echo success ) || ( rm $@ && echo failed )
 
-.PHONY: libskat
-libskat:
-	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $(CLASSPATH)
+.PHONY: default
+default:
+	$(MMC) $(MCFLAGS) -m $(PROJ_LIBNAME) $(MLLIBS) $(CLASSPATH)
 
 test_%: libskat test_%.m
 	$(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $(CLASSPATH)
 
 .PHONY: install
-install: libskat
+install: $(PROJ_LIBNAME)
 	@for lib in $^ ; do \
 		$(SUDO) $(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $$lib.install ; \
 	done

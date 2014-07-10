@@ -1,0 +1,11 @@
+MMC:=mmc
+MTAGS:=mtags
+MCFLAGS:= --use-grade-subdirs -O5
+
+ifdef GRADE
+    MCFLAGS += -s $(GRADE) --no-detect-libgrades
+endif
+
+ifeq ($(OS),Windows_NT)
+    DIFF_FLAGS:=--strip-trailing-cr
+endif
