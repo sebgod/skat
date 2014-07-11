@@ -1,6 +1,8 @@
 include ../Make.options
 include ../Project.options
 
+MODULES:=$(wildcard *.m)
+
 .PHONY: default
 default:
 	$(MMC) $(MCFLAGS) -m $(PROJ_LIBNAME) $(MLLIBS) $(CLASSPATH)
@@ -10,6 +12,9 @@ install: $(PROJ_LIBNAME)
 	@for lib in $^ ; do \
 		$(SUDO) $(MMC) $(MCFLAGS) -m $@ $(MLLIBS) $$lib.install ; \
 	done
+
+tags: $(MODULES)
+	$(MTAGS) $^
 
 .PHONY: clean
 clean:
