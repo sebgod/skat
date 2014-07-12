@@ -55,7 +55,8 @@
 % suit index.
 % XXX Since Mercury guarantees that sizeof(int) >= 4, this aproach works well
 % enough, but is unfortuantely not generic enough for games like Poker.
-% This could be handled by the access functions though
+% This could be handled by the access functions though (and using a native
+% type)
 %
 
 :- type card
