@@ -7,7 +7,7 @@ MODULES:=$(wildcard *.m) $(wildcard ../src/*.m)
 runtests: test_$(PROJ_CNAME) $(PROJ_CNAME).out
 
 .PHONY: runtests-verbose
-runtests-verbose: $(TESTS)
+runtests-verbose: test_$(PROJ_CNAME)
 
 Mercury.modules: $(MODULES)
 	$(MMC) -f $^
