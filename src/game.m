@@ -63,9 +63,9 @@
 init = game(init(deck_all)).
 
 deal(game(init(!.Deck)), game(dealt(Players, Evals, Skat)), !Random) :-
-    PC1 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
-    PC2 = det_draw_cards(10, !.Deck, !:Deck, !.Random, !:Random),
-    PC3 = det_draw_cards(10, !.Deck, Skat, !.Random, !:Random),
+    det_draw_cards(10, !Deck, PC1, !Random),
+    det_draw_cards(10, !Deck, PC2, !Random),
+    det_draw_cards(10, !.Deck, Skat, PC3, !Random),
     Players = [player(PC1, first), player(PC2, middle), player(PC3, last)],
     Evals = map(evaluate_for_bidding, Players).
 

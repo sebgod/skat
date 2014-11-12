@@ -39,21 +39,21 @@
 :- mode member_card(in, in) is semidet.
 :- mode member_card(out, in) is nondet.
 
-:- func draw_cards(int, deck, deck, prng, prng) = deck.
-:- mode draw_cards(in, in, out, mdi, muo) = out is semidet.
-:- mode draw_cards(in, in, out, in, out)  = out is semidet.
+:- pred draw_cards(int, deck, deck, deck, prng, prng).
+:- mode draw_cards(in, in, out, out, mdi, muo) is semidet.
+:- mode draw_cards(in, in, out, out, in, out)  is semidet.
 
-:- func det_draw_cards(int, deck, deck, prng, prng) = deck.
-:- mode det_draw_cards(in, in, out, mdi, muo) = out is det.
-:- mode det_draw_cards(in, in, out, in, out)  = out is det.
+:- pred det_draw_cards(int, deck, deck, deck, prng, prng).
+:- mode det_draw_cards(in, in, out, out, mdi, muo) is det.
+:- mode det_draw_cards(in, in, out, out, in, out)  is det.
 
-:- func draw_card(deck, deck, prng, prng) = card.
-:- mode draw_card(in, out, mdi, muo) = out is semidet.
-:- mode draw_card(in, out, in, out)  = out is semidet.
+:- pred draw_card(deck, deck, card, prng, prng).
+:- mode draw_card(in, out, out, mdi, muo) is semidet.
+:- mode draw_card(in, out, out, in, out)  is semidet.
 
-:- func det_draw_card(deck, deck, prng, prng) = card.
-:- mode det_draw_card(in, out, mdi, muo) = out is det.
-:- mode det_draw_card(in, out, in, out)  = out is det.
+:- pred det_draw_card(deck, deck, card, prng, prng).
+:- mode det_draw_card(in, out, out, mdi, muo) is det.
+:- mode det_draw_card(in, out, out, in, out)  is det.
 
 :- func cards_by_rank(deck, rank) = deck.
 
@@ -118,7 +118,7 @@ member_bit(Card, Index, Cards) :-
 % Card drawing functionality
 %
 
-draw_card(!Deck, !Supply) = Card :-
+draw_card(!Deck, Card, !Supply) :-
     !.Deck \= deck_empty,
     deck(Cards) = !.Deck,
     next_card(RandCard, !Supply),
@@ -126,24 +126,24 @@ draw_card(!Deck, !Supply) = Card :-
         !:Deck = deck(Cards `xor` to_offset(RandCard)),
         Card = RandCard
     ;
-        Card = draw_card(!.Deck, !:Deck, !.Supply, !:Supply)
+        draw_card(!Deck, Card, !Supply)
     ).
 
-det_draw_card(!Deck, !Supply) = Card :-
+det_draw_card(!Deck, Card, !Supply) :-
     (
-        Card0 = draw_card(!.Deck, !:Deck, !.Supply, !:Supply)
+        draw_card(!Deck, Card0, !Supply)
     ->
         Card = Card0
     ;
         unexpected($file, $pred, "Cannot draw a card from an empty deck")
     ).
 
-draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
+draw_cards(NumberOfCards, !Deck, Drawn, !Supply) :-
     draw_cards2(NumberOfCards, deck_empty, Drawn, !Deck, !Supply).
 
-det_draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
+det_draw_cards(NumberOfCards, !Deck, Drawn, !Supply) :-
     (
-        Drawn0 = draw_cards(NumberOfCards, !.Deck, !:Deck, !.Supply, !:Supply)
+        draw_cards(NumberOfCards, !Deck, Drawn0, !Supply)
     ->
         Drawn = Drawn0
     ;
@@ -156,8 +156,8 @@ det_draw_cards(NumberOfCards, !Deck, !Supply) = Drawn :-
 
 draw_cards2(NumberOfCards, !Drawn, !Deck, !Supply) :-
     ( NumberOfCards > 0 ->
-        CardOffset = to_offset(
-            draw_card(!.Deck, !:Deck, !.Supply, !:Supply)),
+        draw_card(!Deck, Card, !Supply),
+        CardOffset = to_offset(Card),
         draw_cards2(NumberOfCards - 1, !.Drawn, !:Drawn,
             !.Deck, !:Deck, !.Supply, !:Supply),
         deck(AlreadyDrawn) = !.Drawn,

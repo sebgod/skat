@@ -73,7 +73,7 @@ real_main(!IO, !Supply, !SB) :-
     Test(format(straight_by_rank(deck_empty, jack)), "without all jacks", !SB),
     Test(format(deck_empty), "no cards",  !SB),
     (
-        Drawn = draw_card(deck_all, AllMinusOne, !.Supply, !:Supply)
+        draw_card(deck_all, AllMinusOne, Drawn, !Supply)
     ->
         Test(format(Drawn), "drawn card", !SB),
         Test(format(AllMinusOne), "left in deck", !SB),
