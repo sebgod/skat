@@ -1,1 +1,1 @@
-@call %~dp0src\test_skat
+@call %~dp0tests\test_skat
